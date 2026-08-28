@@ -1,0 +1,33 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: compass
+      POSTGRES_USER: compass
+      POSTGRES_PASSWORD: compass
+    ports:
+      - "5432:5432"
+    volumes:
+      - compass_pg:/var/lib/postgresql/data
+      - ./db/migrations/001_learner_state.sql:/docker-entrypoint-initdb.d/001.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U compass -d compass"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build: .
+    ports:
+      - "43210:43210"
+    environment:
+      DATABASE_URL: postgres://compass:compass@db:5432/compass
+      NEXT_PUBLIC_PERSISTENCE: remote
+      NODE_ENV: production
+    # Image CMD is standalone server.js (not scripts/dev.mjs).
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  compass_pg:

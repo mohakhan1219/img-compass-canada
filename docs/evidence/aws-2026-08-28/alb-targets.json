@@ -1,0 +1,9 @@
+{
+  "targets": [
+    {
+      "port": 43210,
+      "az": "ca-central-1a",
+      "state": "healthy"
+    }
+  ]
+}

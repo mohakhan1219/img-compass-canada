@@ -1,0 +1,5 @@
+# terraform.tfvars.example — copy to terraform.tfvars (gitignored).
+# Combine with active.tfvars or parked.tfvars.
+
+container_image = "ACCOUNT.dkr.ecr.ca-central-1.amazonaws.com/img-compass-prod-demo:v0.4.1"
+# acm_certificate_arn = "arn:aws:acm:ca-central-1:ACCOUNT:certificate/..."

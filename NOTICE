@@ -1,0 +1,20 @@
+IMG Compass Canada
+Copyright 2026 IMG Compass Canada contributors
+
+This product is licensed under the Apache License, Version 2.0.
+See the LICENSE file.
+
+AI-assisted development
+-----------------------
+Portions of this repository were produced with AI coding assistance under
+human direction. Product scope, architecture, eligibility-disclaimer rules,
+AWS cost/lifecycle choices, and release decisions remain the responsibility of
+the project owner. See README (“What I directed and owned”).
+
+This software is not affiliated with, endorsed by, or produced by the Medical
+Council of Canada (MCC), CaRMS, provincial medical regulatory authorities,
+or any paid question-bank publisher.
+
+Demo catalogs, scores, and provincial snapshots in this repository are
+synthetic. They are not official exam content and must not be treated as
+medical, legal, or licensing advice.

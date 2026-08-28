@@ -1,0 +1,40 @@
+{
+  "name": "img-compass-canada",
+  "version": "0.4.4",
+  "private": true,
+  "license": "Apache-2.0",
+  "description": "IMG Compass Canada — Canadian IMG pathway tracker (demo). Not medical or legal advice.",
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "build": "next build",
+    "start": "node .next/standalone/server.js",
+    "lint": "eslint",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "audit": "npm audit --omit=dev",
+    "db:migrate": "node db/migrate.mjs"
+  },
+  "dependencies": {
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
+    "lucide-react": "^0.544.0",
+    "next": "16.3.3",
+    "pg": "^8.16.3",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "tailwind-merge": "^3.3.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/pg": "^8.15.5",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.3.3",
+    "tailwindcss": "^4",
+    "typescript": "^5",
+    "vitest": "^3.2.4"
+  }
+}

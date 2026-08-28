@@ -1,0 +1,19 @@
+[
+  {
+    "msg": "migrate_ok",
+    "tlsVerified": true
+  },
+  {
+    "level": "info",
+    "msg": "pg_pool_created",
+    "tlsVerified": true,
+    "rejectUnauthorized": true,
+    "requestId": "6ff6bb7e-247e-4d61-98fc-441eed6db731"
+  },
+  {
+    "level": "info",
+    "msg": "ready_postgres",
+    "tlsVerified": true,
+    "requestId": "6ff6bb7e-247e-4d61-98fc-441eed6db731"
+  }
+]

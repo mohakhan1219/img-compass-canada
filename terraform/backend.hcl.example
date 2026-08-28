@@ -1,0 +1,8 @@
+# Do not commit this file with a real bucket name if it is account-specific.
+# Copy to backend.hcl (gitignored) after bootstrap.
+
+bucket         = "REPLACE-ACCOUNT-img-compass-tfstate"
+key            = "prod-demo/terraform.tfstate"
+region         = "ca-central-1"
+dynamodb_table = "img-compass-tf-locks"
+encrypt        = true

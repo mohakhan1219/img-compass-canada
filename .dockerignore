@@ -1,0 +1,9 @@
+node_modules
+.next
+.git
+*.md
+terraform
+.github
+coverage
+# Local Cloud Preview proxy must never ship in the production image
+scripts/dev.mjs

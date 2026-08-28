@@ -1,0 +1,11 @@
+{
+  "cluster": "img-compass-prod-demo",
+  "service": "img-compass-prod-demo",
+  "desired": 1,
+  "running": 1,
+  "pending": 0,
+  "launch": "FARGATE",
+  "taskDefinitionFamily": "img-compass-prod-demo",
+  "taskDefinitionRevision": 2,
+  "rollout": "COMPLETED"
+}

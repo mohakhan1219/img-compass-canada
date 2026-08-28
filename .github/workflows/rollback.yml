@@ -1,0 +1,27 @@
+name: Rollback prod-demo
+
+on:
+  workflow_dispatch:
+    inputs:
+      task_definition_arn:
+        description: Previous ECS task definition ARN
+        required: true
+
+jobs:
+  rollback:
+    runs-on: ubuntu-latest
+    environment: prod-demo
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ca-central-1
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+      - run: |
+          aws ecs update-service \
+            --cluster "${{ secrets.ECS_CLUSTER }}" \
+            --service "${{ secrets.ECS_SERVICE }}" \
+            --task-definition "${{ github.event.inputs.task_definition_arn }}" \
+            --force-new-deployment

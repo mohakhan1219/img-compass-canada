@@ -1,0 +1,22 @@
+[
+  {
+    "tags": null,
+    "digest": "sha256:768c021ac8ae7d008dbe2ca93f1cbcdd53d07d3a273c74b9d85e49fb4eae3d4e",
+    "pushed": "2026-08-28T02:18:55.921000+00:00"
+  },
+  {
+    "tags": [
+      "latest",
+      "v0.3.0"
+    ],
+    "digest": "sha256:a973cb81e0d23a984ff6bde031cd302b02e7ce6b1150253ee7de966092a5285e",
+    "pushed": "2026-08-28T02:47:10.016000+00:00"
+  },
+  {
+    "tags": [
+      "v0.3.1"
+    ],
+    "digest": "sha256:2362a7da4231182975e9f71ae860428b1c1120c5f4138509eafe4b9ef9d45385",
+    "pushed": "2026-08-28T03:04:22.908000+00:00"
+  }
+]

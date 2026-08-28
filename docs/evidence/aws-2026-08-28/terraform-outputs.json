@@ -1,0 +1,10 @@
+{
+  "alb_dns_name": "img-compass-prod-demo-1496842689.ca-central-1.elb.amazonaws.com",
+  "ecs_cluster": "img-compass-prod-demo",
+  "ecs_service": "img-compass-prod-demo",
+  "rds_identifier": "img-compass-prod-demo",
+  "rds_address": "[redacted]",
+  "region": "ca-central-1",
+  "terraform_state": "s3://[redacted-bucket]/prod-demo/terraform.tfstate",
+  "lock_table": "img-compass-tf-locks"
+}
