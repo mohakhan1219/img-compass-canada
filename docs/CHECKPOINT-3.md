@@ -2,7 +2,7 @@
 
 **Note:** Frozen checkpoint from 27 Aug 2026. AWS prod-demo and the public GitHub snapshot came later. Treat the “no public GitHub” lines below as historical, not current status.
 
-**Status at checkpoint:** G–H implementation was complete in this repository. **No public GitHub remote, tag, or LinkedIn post** at that time. Owner review: `docs/PUBLIC-RELEASE-CHECKLIST.md`.
+**Status at checkpoint:** G–H implementation was complete in this repository. There was no public GitHub remote yet.
 
 **Local command:** `npm run dev` only. Cloud Preview uses a development proxy that **must not** run in staging or production.
 
