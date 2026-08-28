@@ -1,26 +1,23 @@
-# AWS / Docker readiness (updated after TLS-hardened prod-demo)
+# AWS / Docker readiness
 
-**Public GitHub:** curated snapshot of this tree (account IDs stripped from git history). **No LinkedIn.** AWS prod-demo is live in ca-central-1 and left running. Do not terraform destroy without owner approval.
+AWS prod-demo was applied in **ca-central-1**. GitHub hosts a curated snapshot of this tree (account IDs omitted from git history). The ALB URL is a **temporary live demo** and may be parked later; screenshots remain in `docs/screenshots/`.
 
 ## Scoreboard
 
 | Item | Result |
 | --- | --- |
-| Docker smoke test | **PASS** (agent VM, 2026-08-27) |
+| Docker smoke test | **PASS** (2026-08-27) |
 | First AWS apply | **DONE** (ca-central-1) |
 | RDS TLS with CA verification | **PASS** (image `v0.3.1`, `/api/ready` `tls.verified: true`) |
 | Terraform image wiring | **PASS** |
 | Active/parked Terraform | **READY** (`active.tfvars` / `parked.tfvars`) |
 | Remote backend + ECR | **IN USE** |
 | HTTPS / ACM | **NOT ENABLED** (HTTP ALB) |
-| Screenshot pack | **READY** (live ALB + synthetic Dr. Alex Morgan) |
-| Public GitHub | **YES** (curated public history; see README) |
-| LinkedIn | **NO** |
+| Screenshot pack | **READY** (synthetic Dr. Alex Morgan) |
+| GitHub Actions CI | **ACTIVE** |
+| GitHub Actions AWS CD / OIDC | **PREPARED, NOT ENABLED** |
 
-## Remaining owner gates
+## Follow-ups
 
-**Before LinkedIn:** public repo URL + honest status (HTTP demo, on-demand AWS, estimated USD 2–4/day while running). Prefer screenshots if the stack is later destroyed.
-
-GitHub OIDC and a custom HTTPS domain remain optional follow-ups.
-
-**Before recruiter HTTPS demo:** ACM + `enable_https` (see `docs/HTTPS.md`).
+- Custom domain + ACM if you want HTTPS (`docs/HTTPS.md`)
+- GitHub Environments + OIDC if you want tag-based deploys (`docs/GITHUB-OIDC.md`)

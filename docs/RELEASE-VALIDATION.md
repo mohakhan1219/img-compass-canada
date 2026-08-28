@@ -1,6 +1,6 @@
 # Release validation (Checkpoint RV)
 
-Executed 2026-08-27 in the agent VM. Historical scoreboard — **GitHub is now a public snapshot of this tree; LinkedIn is still not published.** At the time of this document: no public GitHub remote, no LinkedIn, no `terraform apply`.
+Executed 2026-08-27. Historical scoreboard from before the public GitHub snapshot and AWS apply. GitHub is now public; AWS prod-demo was applied later. Do not treat the “NO” rows below as current status.
 
 Local development remains `npm run dev`. Production validation used **standalone `node server.js`**, not `scripts/dev.mjs`.
 

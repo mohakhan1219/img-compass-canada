@@ -83,7 +83,7 @@ ECS sets `NODE_ENV=production`, `NEXT_PUBLIC_PERSISTENCE=remote`, `COMPASS_COOKI
 
 ## DNS / ACM
 
-- No domain: use ALB DNS from SSM `/img-compass/prod-demo/alb_dns` (HTTP). Fine for a private demo link; ugly for LinkedIn.
+- No domain: use ALB DNS from SSM `/img-compass/prod-demo/alb_dns` (HTTP). Fine as a **temporary live demo**; browsers show “Not secure”.
 - Domain: Route 53 (or external DNS) A/ALIAS to ALB → request ACM cert in `ca-central-1` → `enable_https=true`.
 - Then `COMPASS_COOKIE_SECURE` becomes `true`.
 
@@ -91,7 +91,7 @@ ECS sets `NODE_ENV=production`, `NEXT_PUBLIC_PERSISTENCE=remote`, `COMPASS_COOKI
 
 1. Bootstrap S3/DynamoDB backend.
 2. `terraform init && terraform plan` with a real `container_image` plan (or ECR-first).
-3. `terraform apply` (explicit owner approval).
+3. `terraform apply` after reviewing the plan.
 4. Build/push image; `terraform apply` again if the URI changed.
 5. Hit `http://<alb>/api/health` and `/api/ready`.
 6. Optional: configure GitHub OIDC and secrets (`AWS_ROLE_ARN`, `ECR_REPOSITORY`, `ECS_CLUSTER`, `ECS_SERVICE`).

@@ -1,21 +1,19 @@
 # Public release checklist
 
-LinkedIn stays **off** until the owner posts. AWS destroy stays **owner-gated**.
+Hygiene list for the public tree (not a product backlog).
 
-## Published with this tree
+## In this tree
 
-- [x] New public Git history (not a private study-app clone; local commits that contained an AWS account ID are not pushed)
-- [x] No secrets, `.env`, AWS account IDs, or personal photos in the published tree
-- [x] README, LICENSE, NOTICE, CHANGELOG present
-- [x] Quiet **Demo data** chips (red reserved for real blockers)
+- [x] Curated public Git history (account IDs not published)
+- [x] No secrets, `.env`, or personal photos
+- [x] README, LICENSE, NOTICE, CHANGELOG
+- [x] Quiet **Demo data** chips
 - [x] Screenshot pack (synthetic Dr. Alex Morgan)
-- [x] Prod-demo URL labelled as a synthetic HTTP demo
 - [x] AWS prod-demo applied and TLS-verified (`docs/AWS-DEPLOYMENT-EVIDENCE.md`)
+- [x] Temporary live demo labelled as HTTP / short-lived
 
-## Still owner-gated
+## Optional follow-ups
 
 - [ ] GitHub Environments + OIDC (`docs/GITHUB-OIDC.md`)
-- [ ] Dependabot after the public remote exists
 - [ ] HTTPS / custom domain (`docs/HTTPS.md`)
-- [ ] LinkedIn post after owner review of the public URL
-- [ ] Park or destroy AWS when the live demo is no longer needed (`docs/OPERATIONS-LIFECYCLE.md`)
+- [ ] Park or destroy the AWS runtime when the live demo is no longer needed (`docs/OPERATIONS-LIFECYCLE.md`)

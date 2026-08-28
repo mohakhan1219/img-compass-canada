@@ -4,9 +4,11 @@
 
 A planning workspace for International Medical Graduates (IMGs) who need one place to track exams, provincial requirements, and the CaRMS match cycle.
 
-This is **not** medical, legal, or licensing advice, and it is **not** affiliated with the Medical Council of Canada, CaRMS, or any provincial regulator. Confirm every requirement with official sources. The in-app learner is a fictional **Dr. Alex Morgan**. Catalogs, stations, programmes, and provincial rows are **synthetic**.
+This is **not** medical, legal, or licensing advice, and it is **not** affiliated with the Medical Council of Canada, CaRMS, or any provincial regulator. Confirm every requirement with official sources.
 
-[Apache License 2.0](LICENSE) · [NOTICE](NOTICE) (AI-assisted development + synthetic-data disclosure)
+The in-app learner is fictional **Dr. Alex Morgan**. Catalogs, stations, programmes, and provincial rows are **synthetic**.
+
+[Apache License 2.0](LICENSE) · [NOTICE](NOTICE)
 
 ---
 
@@ -14,7 +16,7 @@ This is **not** medical, legal, or licensing advice, and it is **not** affiliate
 
 IMGs aiming for Canadian residency juggle MCCQE1, NAC, language exams, provincial paperwork, and CaRMS — usually across spreadsheets and bookmarks. IMG Compass Canada turns that into a **derived journey**: one profile, classified holds, and a match pipeline from saved programmes through rank order and match day.
 
-It is a portfolio-grade product demo: real architecture and AWS ops, synthetic clinical content only.
+The application is a portfolio demonstration of product and platform engineering: real AWS architecture and ops patterns, synthetic clinical content only.
 
 ## Product features
 
@@ -33,7 +35,7 @@ Demo sign-in is one click. Settings resets to the Dr. Alex Morgan seed.
 
 ## Screenshots
 
-Synthetic UI only (Dr. Alex Morgan). Full pack: [`docs/screenshots/`](docs/screenshots/).
+Synthetic UI (Dr. Alex Morgan). Full pack: [`docs/screenshots/`](docs/screenshots/).
 
 | Dashboard | Applications |
 | --- | --- |
@@ -49,7 +51,7 @@ Synthetic UI only (Dr. Alex Morgan). Full pack: [`docs/screenshots/`](docs/scree
 
 ## Architecture
 
-Single **Next.js** App Router app. The browser talks to Next.js route handlers (BFF). Domain logic and feature repositories do not know about Postgres. Journey status is **computed**, not stored as percentages.
+Single **Next.js** App Router application. The browser talks to Next.js route handlers (BFF). Domain logic and feature repositories do not know about Postgres. Journey status is **computed**, not stored as percentages. This stack does not call LLM APIs.
 
 ```mermaid
 flowchart LR
@@ -61,7 +63,7 @@ flowchart LR
 
 **Local default:** `NEXT_PUBLIC_PERSISTENCE=local` — browser `localStorage`. Same domain code, no database.
 
-**Remote / AWS:** `NEXT_PUBLIC_PERSISTENCE=remote` — `GET`/`PUT /api/state` persists a versioned JSON document. The browser **never** receives `DATABASE_URL`.
+**Remote:** `NEXT_PUBLIC_PERSISTENCE=remote` — `GET`/`PUT /api/state` persists a versioned JSON document. The browser **never** receives `DATABASE_URL`.
 
 Layers: [`docs/architecture.md`](docs/architecture.md).
 
@@ -76,13 +78,11 @@ Layers: [`docs/architecture.md`](docs/architecture.md).
 | Infra | Terraform, ECS Fargate, ALB, RDS, ECR, Secrets Manager, CloudWatch |
 | CI | GitHub Actions (lint, test, build, Terraform validate, Docker build) |
 
-V1 does **not** call LLM APIs and does not use Azure.
-
-## AWS deployment (live prod-demo)
+## AWS deployment architecture
 
 Region **ca-central-1**. One Fargate task behind an ALB, private RDS, **no NAT Gateway**.
 
-Cost-conscious network (**Option B**): tasks in **public** subnets with a public IP so they can pull ECR and write logs without NAT. Inbound **tcp/43210 only from the ALB security group**. RDS stays in **private** subnets; **5432 only from the ECS security group**.
+Cost-conscious network: tasks in **public** subnets with a public IP so they can pull ECR and write logs without NAT. Inbound **tcp/43210 only from the ALB security group**. RDS stays in **private** subnets; **5432 only from the ECS security group**.
 
 ```mermaid
 flowchart TB
@@ -93,11 +93,17 @@ flowchart TB
   Fargate --> SM[Secrets Manager]
 ```
 
-Evidence (account IDs, ARNs, and DB endpoints omitted): [`docs/AWS-DEPLOYMENT-EVIDENCE.md`](docs/AWS-DEPLOYMENT-EVIDENCE.md). HTTPS on the default `*.elb.amazonaws.com` hostname is not possible; ACM needs a domain you control — [`docs/HTTPS.md`](docs/HTTPS.md).
+Validated apply (account IDs, ARNs, and DB endpoints omitted): [`docs/AWS-DEPLOYMENT-EVIDENCE.md`](docs/AWS-DEPLOYMENT-EVIDENCE.md).
 
-The HTTP demo URL (synthetic data):
+HTTPS is not enabled on the default `*.elb.amazonaws.com` hostname; ACM requires a domain you control. [`docs/HTTPS.md`](docs/HTTPS.md).
+
+### Temporary live demo
+
+HTTP only (browsers show “Not secure”). Synthetic data.
 
 http://img-compass-prod-demo-1496842689.ca-central-1.elb.amazonaws.com/
+
+This URL is a short-lived portfolio runtime. If it is later parked or removed, use the screenshots above and the evidence pack — the repository, Terraform, and CI remain the source of truth.
 
 ## Terraform / IaC
 
@@ -106,23 +112,25 @@ http://img-compass-prod-demo-1496842689.ca-central-1.elb.amazonaws.com/
 - Remote state: S3 + DynamoDB lock (`terraform/bootstrap/`, applied separately)
 - Image URI lives in **gitignored** `terraform.tfvars` (see `terraform.tfvars.example`)
 - `active.tfvars` — desired count 1, ALB on
-- `parked.tfvars` — desired count 0, ALB removed (RDS remains until you stop or destroy it)
-- `terraform/oidc/` — GitHub Actions OIDC roles (not applied until a GitHub environment exists)
+- `parked.tfvars` — desired count 0, ALB removed (RDS remains until stopped or destroyed)
+- `terraform/oidc/` — GitHub Actions OIDC roles (Terraform is ready; **not applied** in this environment)
 
-Never commit `backend.hcl` or `terraform.tfvars`.
+Do not commit `backend.hcl` or `terraform.tfvars`.
 
 ## CI/CD
+
+**CI is active** on this repository. Push and pull-request workflows run lint, tests, production build, Terraform `fmt`/`validate`, and a Docker image build (no push to ECR).
+
+**AWS continuous deploy is prepared but not enabled.** Tag and rollback workflows exist (`.github/workflows/deploy-prod-demo.yml`, `deploy-staging.yml`, `rollback.yml`) and are designed for GitHub OIDC (`AWS_ROLE_ARN` on GitHub Environments). Those Environments and IAM OIDC roles are **not configured** here, so GitHub Actions does **not** currently deploy to AWS. Deploys were applied with Terraform from a trusted workstation. See [`docs/GITHUB-OIDC.md`](docs/GITHUB-OIDC.md).
 
 ```mermaid
 flowchart LR
   Push --> CI[lint test build terraform docker]
-  Tag[git tag v*] --> ECR[Push image]
-  ECR --> ECS[Prod-demo deploy]
-  Manual[workflow_dispatch] --> Staging
-  Rollback[rollback.yml] --> PrevTD[Previous task definition]
+  Tag[git tag v* - not enabled] -.-> ECR[Push image]
+  ECR -.-> ECS[Prod-demo deploy]
 ```
 
-Workflows assume AWS **OIDC** (`AWS_ROLE_ARN` on GitHub Environments). No long-lived access keys in Actions. See [`docs/GITHUB-OIDC.md`](docs/GITHUB-OIDC.md).
+No long-lived AWS access keys in Actions.
 
 ## Observability / SRE
 
@@ -145,15 +153,15 @@ JSON logs include `requestId` (`x-request-id`). SLIs/SLOs: [`docs/sre.md`](docs/
 
 ## Cost-conscious lifecycle
 
-This AWS stack is an **on-demand portfolio environment** (~USD 2–4/day while active: ALB + Fargate + RDS micro + public IPv4). There is **no NAT**.
+The AWS stack is an **on-demand portfolio environment** (order of magnitude **USD 2–4/day** while active: ALB + Fargate + RDS micro + public IPv4). There is **no NAT**.
 
 | State | What you pay for |
 | --- | --- |
 | **Active** | ALB + 1 Fargate task + RDS + logs |
-| **Parked** | No Fargate, no ALB; RDS still exists until stopped/destroyed |
-| **Destroy** | Tear down the app stack; keep bootstrap ECR + Terraform state if you want a cheap restore |
+| **Parked** | No Fargate, no ALB; RDS still exists until stopped or destroyed |
+| **Destroyed** | App stack removed; bootstrap ECR + Terraform state can remain for a cheap restore |
 
-Owner approval is required for destroy. Details: [`docs/OPERATIONS-LIFECYCLE.md`](docs/OPERATIONS-LIFECYCLE.md), [`docs/LOW-COST-AWS.md`](docs/LOW-COST-AWS.md).
+Details: [`docs/OPERATIONS-LIFECYCLE.md`](docs/OPERATIONS-LIFECYCLE.md), [`docs/LOW-COST-AWS.md`](docs/LOW-COST-AWS.md).
 
 ## Local setup
 
@@ -180,37 +188,25 @@ Copy `.env.example` if you need remote persistence locally. Never put RDS creden
 
 ## Deployment notes
 
-1. CI on `main` (lint, tests, production build, Terraform validate, image build).
+1. CI on `main`: lint, tests, production build, Terraform validate, image build.
 2. Image `CMD` is `node db/migrate.mjs && node server.js` — never `npm run dev`.
-3. Push to ECR; set `container_image` in gitignored `terraform.tfvars`.
-4. `terraform apply -var-file=active.tfvars -var-file=terraform.tfvars` (owner-approved).
+3. Push the image to ECR; set `container_image` in gitignored `terraform.tfvars`.
+4. `terraform apply -var-file=active.tfvars -var-file=terraform.tfvars` after reviewing the plan.
 5. Confirm `/api/health` and `/api/ready` (`tls.verified: true` in Postgres mode).
 
 Runbook: [`docs/runbooks/deploy.md`](docs/runbooks/deploy.md).
 
-## Synthetic-data disclaimer
+## Synthetic data
 
-Learner records, catalogs, NAC stations, interview prompts, programmes, and provincial requirement rows are **synthetic**. They exist to show product architecture and workflow. They are not official MCC, NAC, CaRMS, or college content. Do not treat scores or “eligibility” labels as exam or licensing outcomes.
+Learner records, catalogs, NAC stations, interview prompts, programmes, and provincial requirement rows are **synthetic**. They illustrate architecture and workflow, not official MCC, NAC, CaRMS, or college rules. Scores and “eligibility” labels are planning records, not exam or licensing outcomes.
 
-The product shows **one** global portfolio banner plus an About page in the app. It does not repeat legal boxes on every screen.
+The app uses **one** global portfolio banner and an About page.
 
-## AI-assisted development
+## Engineering ownership
 
-Portions of this repository were produced with AI coding assistance under human direction. That does **not** mean the product was undirected. See [NOTICE](NOTICE).
+I defined and directed product requirements, application architecture, AWS platform design, Terraform/IaC strategy, persistence design (BFF + `LearnerStateRepository`), CI/CD strategy, SRE/observability, security controls, deployment and validation, and the cost-conscious park/destroy lifecycle.
 
-### What I directed and owned
-
-- Product scope, IMG journey, and disclaimer rules (synthetic data, no paid Qbank content, no real identity)
-- Architecture: BFF so the browser never holds `DATABASE_URL`; persistence ports; derived journey; hold taxonomy
-- Platform: ECS Fargate instead of EKS; private RDS; no NAT; no AI APIs in V1
-- Terraform shape, park/destroy cost model, and HTTPS-requires-a-domain constraint
-- DevOps: GitHub Actions, tag deploy, rollback, OIDC (no long-lived keys in CI)
-- SRE: health vs ready, JSON logs, request IDs, runbooks
-- Release gates: public GitHub only after a secret/account-ID audit; LinkedIn still owner-gated
-
-### What AI assistance implemented
-
-UI, domain modules, adapters, IaC files, and documentation under that direction, then iterated from review.
+AI-assisted development tools accelerated implementation and documentation. The fuller disclosure is in [NOTICE](NOTICE).
 
 ## Docs
 
@@ -219,9 +215,9 @@ UI, domain modules, adapters, IaC files, and documentation under that direction,
 | [docs/architecture.md](docs/architecture.md) | Layers and request path |
 | [docs/sre.md](docs/sre.md) | SLI/SLO |
 | [docs/security.md](docs/security.md) | Threat notes |
-| [docs/AWS-DEPLOYMENT-EVIDENCE.md](docs/AWS-DEPLOYMENT-EVIDENCE.md) | Live AWS validation (redacted) |
+| [docs/AWS-DEPLOYMENT-EVIDENCE.md](docs/AWS-DEPLOYMENT-EVIDENCE.md) | Applied AWS validation (redacted) |
 | [docs/OPERATIONS-LIFECYCLE.md](docs/OPERATIONS-LIFECYCLE.md) | Deploy / park / restore / cost |
 | [docs/HTTPS.md](docs/HTTPS.md) | ACM / custom domain |
-| [docs/GITHUB-OIDC.md](docs/GITHUB-OIDC.md) | GitHub OIDC |
+| [docs/GITHUB-OIDC.md](docs/GITHUB-OIDC.md) | GitHub OIDC (prepared, not enabled) |
 | [docs/INTERVIEW-GUIDE.md](docs/INTERVIEW-GUIDE.md) | Talking points |
 | [CHANGELOG.md](CHANGELOG.md) | SemVer |

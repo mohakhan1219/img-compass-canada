@@ -19,7 +19,7 @@ cp terraform.tfvars.example terraform.tfvars   # set real ECR URI from bootstrap
 cp backend.hcl.example backend.hcl             # after bootstrap
 terraform init -backend-config=backend.hcl
 terraform plan  -var-file=active.tfvars -var-file=terraform.tfvars
-terraform apply -var-file=active.tfvars -var-file=terraform.tfvars   # owner approval only
+terraform apply -var-file=active.tfvars -var-file=terraform.tfvars
 ```
 
 Park / restore / costs: `docs/OPERATIONS-LIFECYCLE.md`.

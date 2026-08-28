@@ -1,6 +1,6 @@
 # Architecture
 
-IMG Compass Canada is a **single Next.js monolith**. Azure and AI APIs are out of scope for V1.
+IMG Compass Canada is a **single Next.js monolith**. This stack does not call LLM APIs.
 
 ## Request path (PostgreSQL mode)
 

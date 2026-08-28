@@ -14,7 +14,7 @@ Uses **local state** on purpose (chicken-and-egg). Store bucket/table names in `
 cd terraform/bootstrap
 terraform init
 terraform plan
-terraform apply   # only with owner approval
+terraform apply   # after reviewing the plan
 ```
 
 Then push `docker` images to `ecr_repository_url` and apply the app stack with `active.tfvars`.

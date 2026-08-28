@@ -1,8 +1,8 @@
 # AWS deployment evidence — 28 Aug 2026 (TLS verified)
 
-Region: **ca-central-1**. Deploy principal: IAM role `img-compass-canada-deploy` (assumed). **No NAT Gateway.** Environment left **running**; destroy remains owner-gated.
+Region: **ca-central-1**. Deploy principal: IAM role `img-compass-canada-deploy` (assumed). **No NAT Gateway.**
 
-Public URL (HTTP; ACM/HTTPS not enabled yet):
+**Temporary live demo** (HTTP; ACM/HTTPS not enabled). This URL may be parked or removed; screenshots in `docs/screenshots/` remain:
 
 http://img-compass-prod-demo-1496842689.ca-central-1.elb.amazonaws.com/
 
@@ -29,9 +29,7 @@ Account numbers, secret ARNs, database endpoints, and credentials are **omitted*
 | `GET /api/metrics` | 200 metrics JSON |
 | Demo sign-in + `PUT`/`GET /api/state` | Synthetic **Dr. Alex Morgan** seed restored; no leftover TLS round-trip notes |
 | HTTPS | Not enabled. ACM cannot certify `*.elb.amazonaws.com`. See `docs/HTTPS.md`. |
-| GitHub | Curated public snapshot of this tree (no account IDs) |
-| LinkedIn | Not published |
-| Destroy | Not run |
+| Public Git | Curated snapshot of this tree (account IDs omitted) |
 
 ## Validation (after RDS CA hardening)
 

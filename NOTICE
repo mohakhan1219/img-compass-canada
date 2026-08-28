@@ -6,10 +6,10 @@ See the LICENSE file.
 
 AI-assisted development
 -----------------------
-Portions of this repository were produced with AI coding assistance under
-human direction. Product scope, architecture, eligibility-disclaimer rules,
-AWS cost/lifecycle choices, and release decisions remain the responsibility of
-the project owner. See README (“What I directed and owned”).
+Portions of this repository were produced with AI coding assistance.
+Product requirements, architecture, AWS platform design, Terraform/IaC,
+persistence, CI/CD, SRE, security, deployment, and cost-lifecycle decisions
+were directed by the project author. See README (“Engineering ownership”).
 
 This software is not affiliated with, endorsed by, or produced by the Medical
 Council of Canada (MCC), CaRMS, provincial medical regulatory authorities,

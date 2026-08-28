@@ -4,7 +4,7 @@ The live URL is the default ALB hostname (`*.ca-central-1.elb.amazonaws.com`). B
 
 **ACM cannot issue a certificate for `*.elb.amazonaws.com`.** A custom domain you control is required before HTTPS can be turned on.
 
-Do **not** purchase a domain until the owner approves it. Nothing below has been bought or applied.
+HTTPS is not possible on the default ALB hostname. A custom domain is required. ACM public certificates are free. Nothing below has been purchased or applied.
 
 ## Direct answers
 
@@ -15,7 +15,7 @@ Do **not** purchase a domain until the owner approves it. Nothing below has been
 | Does ACM itself cost anything? | **No.** Public ACM certificates are free. You pay only for the domain and DNS. |
 | Can the existing ALB just add an HTTPS listener? | **Yes.** Terraform already has `enable_https` and `acm_certificate_arn`. That adds a **:443** listener on the **same ALB**, forwards to the existing target group, and redirects HTTP :80 → HTTPS. ECS sets `COMPASS_COOKIE_SECURE=true`. No second ALB, no NAT, no CloudFront. |
 
-## Lowest-cost path (when approved)
+## Lowest-cost path
 
 1. Domain (~USD 12–20/year).
 2. ACM public cert in **ca-central-1** (free), DNS-validated.
@@ -24,4 +24,4 @@ Do **not** purchase a domain until the owner approves it. Nothing below has been
 
 ## Not implemented
 
-`enable_https` remains `false`. The live demo stays HTTP until a domain is approved.
+`enable_https` remains `false`. The demo stays HTTP until a custom domain and ACM certificate are wired.

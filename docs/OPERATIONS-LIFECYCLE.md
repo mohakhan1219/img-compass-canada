@@ -93,9 +93,9 @@ A. Docker smoke on Windows — **blocker** (`docs/DOCKER-SMOKE-WINDOWS.md`)
 B. Public GitHub — curated snapshot of this tree  
 C. GitHub OIDC — after Environments exist (`docs/GITHUB-OIDC.md`)  
 D–E. Build and push image to **bootstrap ECR**  
-F. Bootstrap apply (state + lock + ECR) — owner approval  
+F. Bootstrap apply (state + lock + ECR)  
 G. `terraform plan -var-file=active.tfvars -var-file=terraform.tfvars`  
-H. Owner reviews plan  
+H. Review the plan  
 I. `terraform apply` same files  
 J. Image CMD already runs `db/migrate.mjs` then `server.js`  
 K–M. `/api/health`, `/api/ready`, `/api/metrics`  
@@ -109,7 +109,7 @@ Q. Screenshots / ALB URL evidence
 ```bash
 cd terraform
 terraform plan  -var-file=parked.tfvars -var-file=terraform.tfvars
-terraform apply -var-file=parked.tfvars -var-file=terraform.tfvars   # owner approval
+terraform apply -var-file=parked.tfvars -var-file=terraform.tfvars
 # optional, same day / same week only:
 aws rds stop-db-instance --db-instance-identifier img-compass-prod-demo
 ```
@@ -122,7 +122,7 @@ Remains: VPC, RDS (stopped or not), ECS cluster/service at 0, task definition, s
 aws rds start-db-instance --db-instance-identifier img-compass-prod-demo
 # wait until available (often 5–15 minutes)
 cd terraform
-terraform apply -var-file=active.tfvars -var-file=terraform.tfvars   # owner approval
+terraform apply -var-file=active.tfvars -var-file=terraform.tfvars
 ```
 
 Confirm `/api/health` and `/api/ready` on the **new** ALB DNS (SSM parameter).

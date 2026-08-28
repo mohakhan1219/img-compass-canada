@@ -2,6 +2,11 @@
 
 All notable changes to IMG Compass Canada are documented here. Versioning follows [SemVer](https://semver.org/).
 
+## 0.4.5 — 2026-08-28
+
+### Changed
+- Public README and linked docs: recruiter-facing wording, CI vs CD/OIDC, temporary demo URL.
+
 ## 0.4.4 — 2026-08-28
 
 ### Changed

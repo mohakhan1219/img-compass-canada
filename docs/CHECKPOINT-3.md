@@ -1,6 +1,6 @@
 # Checkpoint 3 (G–H) — historical report
 
-**Note:** This document is a frozen checkpoint from 27 Aug 2026. AWS prod-demo and the public GitHub snapshot came later. LinkedIn remains owner-gated. Do not treat the “no public GitHub” lines below as current product status.
+**Note:** Frozen checkpoint from 27 Aug 2026. AWS prod-demo and the public GitHub snapshot came later. Treat the “no public GitHub” lines below as historical, not current status.
 
 **Status at checkpoint:** G–H implementation was complete in this repository. **No public GitHub remote, tag, or LinkedIn post** at that time. Owner review: `docs/PUBLIC-RELEASE-CHECKLIST.md`.
 

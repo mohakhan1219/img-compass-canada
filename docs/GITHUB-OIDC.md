@@ -2,7 +2,7 @@
 
 Workflows already use `aws-actions/configure-aws-credentials` with `role-to-assume: ${{ secrets.AWS_ROLE_ARN }}` and `permissions: id-token: write`. They must **not** use long-lived `AWS_ACCESS_KEY_ID` on GitHub.
 
-Apply `terraform/oidc/` only after GitHub Environments `staging` and `prod-demo` exist and the owner approves IAM resource creation.
+Apply `terraform/oidc/` after GitHub Environments `staging` and `prod-demo` exist. This IAM stack is **not applied** in the current environment.
 
 ```bash
 cd terraform/oidc

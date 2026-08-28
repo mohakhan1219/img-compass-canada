@@ -1,6 +1,6 @@
 # Interview guide — IMG Compass Canada
 
-Speak as the person who **directed** product, architecture, platform, and validation. Do **not** claim you typed every React component by hand. AI-assisted implementation was used under your direction (see `NOTICE`).
+Speak as the person who **directed** product, architecture, platform, and validation. Implementation used AI-assisted tools under that direction (see `NOTICE`).
 
 ## 60 seconds
 
@@ -34,11 +34,11 @@ Domain and feature repos stay free of I/O. Persistence ports let localStorage, i
 
 ## CI/CD
 
-`ci.yml`: lint, test, build, audit, terraform fmt/validate, docker build. Staging is `workflow_dispatch`. Prod-demo is git tag `v*`. Rollback workflow swaps the ECS task definition. AWS OIDC for those deploys is still owner-gated (`docs/GITHUB-OIDC.md`).
+`ci.yml` is **active** on GitHub: lint, test, build, audit, terraform fmt/validate, docker build. Staging (`workflow_dispatch`), prod-demo tag deploy, and rollback workflows are **in-repo but not enabled** — they need GitHub Environments and AWS OIDC (`docs/GITHUB-OIDC.md`). GitHub Actions does not currently deploy to AWS.
 
 ## Terraform flow
 
-`init` (S3 backend after bootstrap) → `fmt` → `validate` → `plan -var-file=active.tfvars` with a real ECR image → owner `apply`. After a demo, `parked.tfvars` (ECS 0, no ALB) or `terraform destroy` of the app stack while bootstrap ECR/state remain. See `docs/OPERATIONS-LIFECYCLE.md`.
+`init` (S3 backend after bootstrap) → `fmt` → `validate` → `plan -var-file=active.tfvars` with a real ECR image → `apply`. After a demo, `parked.tfvars` (ECS 0, no ALB) or `terraform destroy` of the app stack while bootstrap ECR/state remain. See `docs/OPERATIONS-LIFECYCLE.md`.
 
 ## SLI / SLO
 
@@ -64,7 +64,9 @@ Cloud Preview iframe sent `Origin: null`. Next 16 `blockCrossSiteDEV` allowed `/
 
 **Implemented and proven:** product path with demo data, BFF, Postgres adapter, health/ready/metrics, Terraform, standalone production server, local Postgres round-trip, **and a validated AWS prod-demo** in ca-central-1 (see `docs/AWS-DEPLOYMENT-EVIDENCE.md`).
 
-**Still not done:** GitHub Actions OIDC in the owner AWS account, HTTPS/ACM (needs a custom domain), real identity, LinkedIn.
+**Designed, not currently enabled:** GitHub Actions → AWS deploy via OIDC; HTTPS/ACM (needs a domain you control); real identity.
+
+**Out of scope:** LLM APIs, PHI, official MCC/CaRMS data.
 
 You may say:
 
@@ -74,7 +76,7 @@ You may say:
 
 - That you wrote every line without AI assistance
 - That the environment will stay up forever (it is on-demand and still bills while running)
-- That Docker was never validated (Compose production smoke **did** pass in the agent VM)
+- That Docker was never validated (Compose production smoke **did** pass)
 - That this is official MCC/CaRMS software or medical advice
 - That demo auth is production identity or that the app is PHIPA/HIPAA certified
 - That language “needs verification” is a failed exam
