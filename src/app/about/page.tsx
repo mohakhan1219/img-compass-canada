@@ -2,13 +2,13 @@
 
 import Link from "next/link";
 import { Compass } from "lucide-react";
-import { DEMO_DATA_NOTICE, ELIGIBILITY_DISCLAIMER } from "@/lib/eligibility";
 import { PortfolioBanner } from "@/components/portfolio-banner";
-import { useStore } from "@/components/store-provider";
+import { isSignedIn, useStore } from "@/components/store-provider";
+import { JOURNEY_STAGES } from "@/domain/stages";
 
 export default function AboutPage() {
   const { state } = useStore();
-  const signedIn = state.demoSignedIn;
+  const signedIn = isSignedIn(state);
 
   return (
     <div className={signedIn ? "" : "min-h-screen bg-[#f4f1ea]"}>
@@ -20,27 +20,45 @@ export default function AboutPage() {
             Back
           </Link>
         )}
-        <h1 className="text-3xl font-semibold tracking-tight text-[#0b1f33]">About this demo</h1>
-        <div className="mt-8 space-y-6 text-[15px] leading-relaxed text-slate-700">
+        <h1 className="text-3xl font-semibold tracking-tight text-[#0b1f33]">About IMG Compass Canada</h1>
+        <div className="mt-8 space-y-8 text-[15px] leading-relaxed text-slate-700">
           <section>
-            <h2 className="text-base font-semibold text-[#0b1f33]">What this is</h2>
+            <h2 className="text-base font-semibold text-[#0b1f33]">What is IMG Compass Canada?</h2>
             <p className="mt-2">
-              IMG Compass Canada is a portfolio product: a journey planner for International Medical
-              Graduates targeting Canadian residency. It demonstrates a Next.js application, a BFF
-              over PostgreSQL, and a small AWS production stack (ECS Fargate, private RDS, ALB).
+              IMG Compass Canada is a personal navigation and tracking platform for International Medical
+              Graduates pursuing medical residency in Canada. It brings pathway planning, credential milestones,
+              MCCQE preparation, NAC preparation, language requirements, provincial research, program research,
+              CaRMS applications, interviews, ranking and Match Day into one connected workspace.
             </p>
           </section>
           <section>
-            <h2 className="text-base font-semibold text-[#0b1f33]">What this is not</h2>
-            <p className="mt-2">{ELIGIBILITY_DISCLAIMER}</p>
+            <h2 className="text-base font-semibold text-[#0b1f33]">Journey</h2>
+            <p className="mt-2">{JOURNEY_STAGES.map((s) => s.label).join(" → ")}</p>
           </section>
           <section>
-            <h2 className="text-base font-semibold text-[#0b1f33]">Demo data</h2>
-            <p className="mt-2">{DEMO_DATA_NOTICE}</p>
+            <h2 className="text-base font-semibold text-[#0b1f33]">What it helps users do</h2>
+            <ul className="mt-2 list-disc space-y-1 pl-5">
+              <li>understand their journey</li>
+              <li>see what comes next</li>
+              <li>track personal milestones</li>
+              <li>research provinces and institutions</li>
+              <li>reach official sources quickly</li>
+              <li>manage applications, interviews, and a private rank list</li>
+              <li>track Match Day and residency onboarding or next-cycle planning</li>
+            </ul>
+          </section>
+          <section>
+            <h2 className="text-base font-semibold text-[#0b1f33]">What it is not</h2>
             <p className="mt-2">
-              The seeded learner is Dr. Alex Morgan. Catalogs, NAC stations, interview prompts,
-              CaRMS programmes, and provincial requirement rows are original sample content — not
-              MCC, CaRMS, or paid Qbank materials.
+              IMG Compass does not replace MCC, CaRMS, provincial regulators or universities. Requirements change
+              and final eligibility must always be confirmed with the responsible organization.
+            </p>
+          </section>
+          <section>
+            <h2 className="text-base font-semibold text-[#0b1f33]">Portfolio disclosure</h2>
+            <p className="mt-2">
+              Demo learner activity is synthetic. Real institution names and official-source references may be used
+              for navigation. Compass does not copy paid or proprietary exam content.
             </p>
           </section>
         </div>

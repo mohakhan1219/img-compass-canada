@@ -5,12 +5,17 @@ import pg from "pg";
 import { pgClientConfig } from "./pg-ssl.mjs";
 
 const dir = path.dirname(fileURLToPath(import.meta.url));
-const sql = fs.readFileSync(path.join(dir, "migrations/001_learner_state.sql"), "utf8");
+const migrationsDir = path.join(dir, "migrations");
 
 if (!process.env.DATABASE_URL) {
   console.log(JSON.stringify({ ts: new Date().toISOString(), msg: "skip_migrate_no_database_url" }));
   process.exit(0);
 }
+
+const files = fs
+  .readdirSync(migrationsDir)
+  .filter((f) => f.endsWith(".sql"))
+  .sort();
 
 const cfg = pgClientConfig(process.env.DATABASE_URL);
 const client = new pg.Client({
@@ -18,6 +23,10 @@ const client = new pg.Client({
   ssl: cfg.ssl,
 });
 await client.connect();
-await client.query(sql);
+for (const file of files) {
+  const sql = fs.readFileSync(path.join(migrationsDir, file), "utf8");
+  await client.query(sql);
+  console.log(JSON.stringify({ ts: new Date().toISOString(), msg: "migrate_file", file }));
+}
 await client.end();
-console.log(JSON.stringify({ ts: new Date().toISOString(), msg: "migrate_ok", tlsVerified: cfg.tlsVerified }));
+console.log(JSON.stringify({ ts: new Date().toISOString(), msg: "migrate_ok", tlsVerified: cfg.tlsVerified, files }));

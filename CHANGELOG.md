@@ -2,6 +2,26 @@
 
 All notable changes to IMG Compass Canada are documented here. Versioning follows [SemVer](https://semver.org/).
 
+## 0.5.0 — 2026-08-29
+
+### Added
+- Individual accounts (sign up / sign in / sign out / password reset) with PostgreSQL PBKDF2 hashes; optional Amazon Cognito (Terraform-gated, default off).
+- Seven-step onboarding and section-based profile completeness.
+- Reference catalogs: real CaRMS R-1 institutions, official sources, 2027 timeline dates from carms.ca, language-exam catalog, credentials tracker, Program Explorer.
+- Personalized journey including credentials, programs, and residency onboarding.
+- Transparent Compass planning indicator (not an MCC/NAC/match prediction).
+
+### Changed
+- Sessions use an opaque `compass_session` cookie. The legacy learner-id cookie is no longer trusted.
+- Provincial pathway and Program Explorer use official faculty names and URLs. Fictional Northlake/Harbour/Prairie names are not in the reference catalog.
+- Explore Demo (Dr. Alex Morgan) is optional, not the only entry.
+
+### Security
+- User state is keyed by authenticated user id. GET /api/state never seeds demo data into a real account.
+
+
+All notable changes to IMG Compass Canada are documented here. Versioning follows [SemVer](https://semver.org/).
+
 ## 0.4.5 — 2026-08-28
 
 ### Changed

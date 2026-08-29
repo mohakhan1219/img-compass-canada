@@ -19,3 +19,8 @@ output "rds_address" {
 output "rds_identifier" {
   value = aws_db_instance.postgres.identifier
 }
+
+output "cognito_user_pool_id" {
+  value       = var.enable_cognito ? aws_cognito_user_pool.app[0].id : null
+  description = "Null unless enable_cognito=true."
+}

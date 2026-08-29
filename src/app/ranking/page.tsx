@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardTitle } from "@/components/ui/card";
 import { PageHeader } from "@/components/page-header";
-import { setRankOrder } from "@/data/repositories/carms-repository";
+import { setRankOrder, updateProgram } from "@/data/repositories/carms-repository";
 import { computeCarmsPipeline, rankedPrograms, rankingConflicts } from "@/domain/carms";
 import { useStore } from "@/components/store-provider";
 import { ChevronDown, ChevronUp } from "lucide-react";
@@ -11,8 +11,10 @@ import { ChevronDown, ChevronUp } from "lucide-react";
 export default function RankingPage() {
   const { state, setState } = useStore();
   const pipe = computeCarmsPipeline(state.programs, state.matchOutcome);
+  const interviewed = state.programs.filter((p) => p.interviewed || p.rankOverride);
   const ranked = rankedPrograms(state.programs);
-  const unranked = state.programs.filter((p) => !p.rankIncluded);
+  const unranked = interviewed.filter((p) => !p.rankIncluded);
+  const others = state.programs.filter((p) => !p.interviewed && !p.rankOverride && !p.rankIncluded);
   const conflicts = rankingConflicts(state.programs);
   const first = ranked[0];
   const orderedIds = ranked.map((p) => p.id);
@@ -39,7 +41,7 @@ export default function RankingPage() {
       <PageHeader
         eyebrow="Match"
         title="Rank order"
-        description="Build a private list of programmes in the order you would submit them."
+        description="Private rank-order list. Compass does not tell you what order to submit and does not predict match probability."
       />
 
       <div className="grid gap-3 sm:grid-cols-3">
@@ -120,6 +122,23 @@ export default function RankingPage() {
                 </div>
                 <Button size="sm" onClick={() => include(p.id)}>
                   Include
+                </Button>
+              </li>
+            ))}
+          </ul>
+        </Card>
+      ) : null}
+
+      {others.length ? (
+        <Card>
+          <CardTitle>Not interviewed</CardTitle>
+          <p className="mt-2 text-sm text-slate-600">Include only with an explicit override. Compass will not suggest a rank order.</p>
+          <ul className="mt-3 space-y-2">
+            {others.map((p) => (
+              <li key={p.id} className="flex items-center justify-between gap-3">
+                <span>{p.name}</span>
+                <Button size="sm" variant="outline" onClick={() => setState(updateProgram(state, p.id, { rankOverride: true }))}>
+                  Override and consider
                 </Button>
               </li>
             ))}

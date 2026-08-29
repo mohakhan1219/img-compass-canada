@@ -5,6 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardTitle } from "@/components/ui/card";
 import { Input, Label, Textarea } from "@/components/ui/input";
+import { SELECT } from "@/components/search-select";
+import type { MilestoneStatus } from "@/domain/types";
 import { PageHeader } from "@/components/page-header";
 import { RingStat } from "@/components/progress";
 import { logNacAttempt, logNacMock } from "@/data/repositories/nac-repository";
@@ -39,14 +41,41 @@ export default function NacPage() {
   return (
     <div className="space-y-8">
       <PageHeader
-        eyebrow="Exams"
-        title="NAC practice"
-        description="Timed clinical stations with self-scored attempts."
+        eyebrow="Exams & Study"
+        title="NAC"
+        description="Official exam tracking plus a practice center. Stations are original Compass timing prompts, not proprietary NAC material."
       />
+
+      <Card>
+        <CardTitle>My NAC Exam</CardTitle>
+        <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <select
+            className={SELECT}
+            value={state.nacExam.status}
+            onChange={(e) => setState({ ...state, nacExam: { ...state.nacExam, status: e.target.value as MilestoneStatus } })}
+          >
+            <option value="">Not recorded</option>
+            <option value="not_started">Not started</option>
+            <option value="in_progress">In progress</option>
+            <option value="waiting">Waiting</option>
+            <option value="complete">Complete</option>
+          </select>
+          <Input
+            type="date"
+            value={state.nacExam.scheduledDate.slice(0, 10)}
+            onChange={(e) => setState({ ...state, nacExam: { ...state.nacExam, scheduledDate: e.target.value } })}
+          />
+          <Input placeholder="Attempt" value={state.nacExam.attempt} onChange={(e) => setState({ ...state, nacExam: { ...state.nacExam, attempt: e.target.value } })} />
+          <Input placeholder="Result (optional)" value={state.nacExam.result} onChange={(e) => setState({ ...state, nacExam: { ...state.nacExam, result: e.target.value } })} />
+        </div>
+        <a className="mt-3 inline-block text-sm text-teal-800" href="https://mcc.ca/examinations/nac-examination/" target="_blank" rel="noreferrer">
+          View official source ↗
+        </a>
+      </Card>
 
       <div className="grid gap-4 lg:grid-cols-3">
         <Card className="lg:col-span-1">
-          <RingStat value={scorePct} label="Practice readiness" hint={readiness.label} />
+          <RingStat value={scorePct} label="Practice indicator" hint={readiness.label} />
         </Card>
         <Card>
           <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Stations</p>

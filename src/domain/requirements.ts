@@ -1,20 +1,10 @@
 import type { PathwayRequirement, RequirementApplicability } from "./types";
+import { JURISDICTIONS } from "@/reference/provinces";
 
-export const CANADIAN_PROVINCES: { code: string; name: string }[] = [
-  { code: "AB", name: "Alberta" },
-  { code: "BC", name: "British Columbia" },
-  { code: "MB", name: "Manitoba" },
-  { code: "NB", name: "New Brunswick" },
-  { code: "NL", name: "Newfoundland and Labrador" },
-  { code: "NS", name: "Nova Scotia" },
-  { code: "NT", name: "Northwest Territories" },
-  { code: "NU", name: "Nunavut" },
-  { code: "ON", name: "Ontario" },
-  { code: "PE", name: "Prince Edward Island" },
-  { code: "QC", name: "Quebec" },
-  { code: "SK", name: "Saskatchewan" },
-  { code: "YT", name: "Yukon" },
-];
+export const CANADIAN_PROVINCES: { code: string; name: string }[] = JURISDICTIONS.map((j) => ({
+  code: j.code,
+  name: j.name,
+}));
 
 export const REQUIREMENT_APPLICABILITY: { id: RequirementApplicability; label: string }[] = [
   { id: "required", label: "Required" },

@@ -1,14 +1,14 @@
 # IMG Compass Canada
 
-**Your path to Canadian residency**
+**Your complete journey from IMG to Canadian residency — in one place.**
 
-A planning workspace for International Medical Graduates (IMGs) who need one place to track exams, provincial requirements, and the CaRMS match cycle.
+A personal navigation and tracking workspace for International Medical Graduates. It organizes pathway planning, credentials, MCCQE and NAC preparation, language evidence, provincial and program research, CaRMS applications, interviews, ranking, Match Day, and residency onboarding.
 
 This is **not** medical, legal, or licensing advice, and it is **not** affiliated with the Medical Council of Canada, CaRMS, or any provincial regulator. Confirm every requirement with official sources.
 
-The in-app learner is fictional **Dr. Alex Morgan**. Catalogs, stations, programmes, and provincial rows are **synthetic**.
+Create an individual account, or optionally **Explore Demo** as fictional **Dr. Alex Morgan**. Demo learner activity is synthetic. Real faculty names and official URLs are used for navigation.
 
-[Apache License 2.0](LICENSE) · [NOTICE](NOTICE)
+[Apache License 2.0](LICENSE) · [NOTICE](NOTICE) · [V2 plan](docs/V2-PLAN.md)
 
 ---
 
@@ -20,18 +20,20 @@ The application is a portfolio demonstration of product and platform engineering
 
 ## Product features
 
-- **IMG profile** and a computed journey (profile → MCCQE1 → NAC → language → provincial → CaRMS → applications → interviews → ranking → match)
-- **MCCQE1** session logging, accuracy, duration safeguards, and interval review on original **Compass** catalogs (not paid publisher banks)
-- **NAC** timed stations and self-scored attempts
-- **Language** evidence (OET / IELTS / CELPIP) with applicability you classify, not a national rule
-- **Provincial pathway** tracker with quiet “Demo data” chips — red is reserved for real blockers
-- **CaRMS pipeline** with visual stages: Saved → Documents → Submitted → Invited → Interviewed → Ranked
-- **Applications** workspace: programme summary, checklists, expandable document controls
-- **Interviews** prep dashboard and a focused practice workspace
-- **Rank order** list with include/exclude and reorder
-- **Match day** awaiting / matched / unmatched states (demo outcome controls are tucked away)
+- **Individual accounts** (email sign-up / sign-in) plus optional Explore Demo
+- **7-step onboarding** that builds a personalized path
+- **IMG profile** with section completeness (not a fake 100%)
+- **My Journey** from profile through credentials, exams, provinces, programs, CaRMS, match, and residency
+- **MCCQE** exam tracker + preparation logs + official MCC links
+- **NAC** exam tracker + practice center
+- **Language** catalog (not hard-coded to three exams forever)
+- **Provincial pathways** with real CaRMS R-1 faculties and official sources
+- **Program Explorer** (institution research records; 2027 descriptions are not fabricated)
+- **CaRMS hub** with published 2027 first-iteration dates and last-verified metadata
+- **Applications → Interviews → Ranking → Match** as one store
+- **About** page describing what Compass is and is not
 
-Demo sign-in is one click. Settings resets to the Dr. Alex Morgan seed.
+Demo sign-in remains optional. Settings resets demo data only for the demo learner.
 
 ## Screenshots
 

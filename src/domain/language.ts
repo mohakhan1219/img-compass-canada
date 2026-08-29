@@ -1,10 +1,10 @@
+import { LANGUAGE_EXAM_CATALOG } from "@/reference/catalogs";
 import type { LanguageApplicability, LanguageAttempt, LanguageExamKind, LanguagePlan } from "./types";
 
-export const LANGUAGE_EXAMS: { id: LanguageExamKind; label: string }[] = [
-  { id: "oet_medicine", label: "OET Medicine" },
-  { id: "ielts_academic", label: "IELTS Academic" },
-  { id: "celpip", label: "CELPIP" },
-];
+export const LANGUAGE_EXAMS: { id: LanguageExamKind; label: string }[] = LANGUAGE_EXAM_CATALOG.map((e) => ({
+  id: e.id,
+  label: e.name,
+}));
 
 export const LANGUAGE_APPLICABILITY: { id: LanguageApplicability; label: string }[] = [
   { id: "required", label: "Required" },

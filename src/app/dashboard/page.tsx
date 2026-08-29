@@ -6,12 +6,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardTitle } from "@/components/ui/card";
 import { PageHeader } from "@/components/page-header";
-import { ProgressBar } from "@/components/progress";
 import { JOURNEY_STAGES } from "@/domain/stages";
-import { computeJourneySnapshot, issuesForStage, isVerificationHold } from "@/domain/journey";
-import { BLOCKER_KIND_LABEL, formatIssueHeadline } from "@/domain/blockers";
-import { computeCarmsPipeline } from "@/domain/carms";
-import { mccqe1Insights } from "@/lib/store";
+import { computeJourneySnapshot, deriveNextActions, issuesForStage, isVerificationHold } from "@/domain/journey";
+import { MATCH_CYCLES } from "@/reference/match-cycles";
 import { useStore } from "@/components/store-provider";
 import { cn } from "@/lib/utils";
 
@@ -20,26 +17,32 @@ const STATUS_COPY: Record<string, string> = {
   in_progress: "In progress",
   blocked: "Needs attention",
   not_started: "Not started",
+  waiting: "Waiting",
+  needs_verification: "Needs verification",
 };
 
 export default function DashboardPage() {
   const { state } = useStore();
-  const insights = mccqe1Insights(state);
   const journey = computeJourneySnapshot(state);
-  const pipeline = computeCarmsPipeline(state.programs, state.matchOutcome);
-  const verify = journey.flags.issues.filter((i) => isVerificationHold(i.kind));
-  const blockers = journey.flags.issues.filter((i) => !isVerificationHold(i.kind) && i.kind !== "incomplete_requirement");
+  const actions = deriveNextActions(state);
   const first = JOURNEY_STAGES.find((s) => journey.status[s.id] !== "complete");
-  const done = JOURNEY_STAGES.filter((s) => journey.status[s.id] === "complete").length;
-  const pct = Math.round((done / JOURNEY_STAGES.length) * 100);
-  const firstName = state.profile.displayName.replace(/^Dr\.\s+/, "").split(" ")[0];
+  const firstName = (state.profile.displayName || "there").replace(/^Dr\.\s+/, "").split(" ")[0];
+  const cycle = MATCH_CYCLES.find((c) => c.id === state.profile.targetMatchCycleId);
+  const upcoming = [
+    state.mccqeExam?.scheduledDate ? { label: "MCCQE (personal date)", date: state.mccqeExam.scheduledDate, href: "/mccqe1" } : null,
+    ...state.programs
+      .filter((p) => p.deadline)
+      .map((p) => ({ label: p.name, date: p.deadline, href: "/applications" })),
+  ]
+    .filter(Boolean)
+    .slice(0, 4) as { label: string; date: string; href: string }[];
 
   return (
     <div className="space-y-8">
       <PageHeader
         eyebrow="Dashboard"
         title={`Welcome back, ${firstName}`}
-        description="Your Canadian residency journey — progress, next step, and a quiet list of items to confirm."
+        description="A connected view of where you are, what still needs attention, and which official source to check next."
         actions={
           first ? (
             <Link href={first.href}>
@@ -52,32 +55,51 @@ export default function DashboardPage() {
         }
       />
 
-      <Card className="bg-gradient-to-br from-[#0b1f33] to-teal-900 text-white">
-        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal-200">Overall progress</p>
-        <div className="mt-3 flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <p className="text-4xl font-semibold tabular-nums">{pct}%</p>
-            <p className="mt-1 text-sm text-teal-100/80">
-              {done} of {JOURNEY_STAGES.length} stages complete
-            </p>
-          </div>
-          <div className="text-right text-sm">
-            <p className="text-teal-100/70">Current stage</p>
-            <p className="text-lg font-medium">{first?.label ?? "Journey complete"}</p>
-          </div>
-        </div>
-        <ProgressBar value={pct} className="mt-5 bg-white/15" />
-        <p className="mt-4 text-sm text-teal-50/90">{journey.flags.next}</p>
-      </Card>
+      <div className="grid gap-4 lg:grid-cols-4">
+        <Card className="bg-gradient-to-br from-[#0b1f33] to-teal-900 text-white lg:col-span-2">
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal-200">You are here</p>
+          <p className="mt-2 text-2xl font-semibold">{journey.flags.currentLabel}</p>
+          <p className="mt-3 text-sm text-teal-50/90">{journey.flags.next}</p>
+        </Card>
+        <Card>
+          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Main attention</p>
+          <p className="mt-2 font-medium text-[#0b1f33]">{journey.flags.attention}</p>
+        </Card>
+        <Card>
+          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">CaRMS</p>
+          <p className="mt-2 font-medium text-[#0b1f33]">{cycle ? "2027 cycle" : "Select a cycle"}</p>
+          <p className="mt-1 text-sm text-slate-500">{cycle?.name ?? "No cycle recorded"}</p>
+        </Card>
+      </div>
+
+      <section>
+        <h2 className="mb-3 text-sm font-semibold uppercase tracking-[0.14em] text-slate-500">Next actions</h2>
+        <ul className="grid gap-2 md:grid-cols-3">
+          {actions.length === 0 ? (
+            <Card>No outstanding tracker actions. Confirm official sources before applying.</Card>
+          ) : (
+            actions.map((a) => (
+              <li key={a.href + a.title}>
+                <Link href={a.href} className="block h-full">
+                  <Card className="h-full hover:shadow-md">
+                    <CardTitle>{a.title}</CardTitle>
+                    <p className="mt-2 text-sm text-slate-600">{a.detail}</p>
+                  </Card>
+                </Link>
+              </li>
+            ))
+          )}
+        </ul>
+      </section>
 
       <section>
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-[0.14em] text-slate-500">Journey</h2>
-        <ol className="grid gap-2 sm:grid-cols-2 xl:grid-cols-5">
+        <ol className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
           {JOURNEY_STAGES.map((stage, i) => {
             const status = journey.status[stage.id];
             const stageIssues = issuesForStage(journey.flags.issues, stage.id);
             const verifyOnly =
-              status === "blocked" &&
+              (status === "blocked" || status === "needs_verification") &&
               stageIssues.length > 0 &&
               stageIssues.every((x) => isVerificationHold(x.kind));
             return (
@@ -91,21 +113,8 @@ export default function DashboardPage() {
                 >
                   <span className="text-[11px] font-medium text-slate-400">{String(i + 1).padStart(2, "0")}</span>
                   <span className="mt-1 font-medium text-[#0b1f33]">{stage.label}</span>
-                  <Badge
-                    className="mt-2 w-fit"
-                    tone={
-                      status === "complete"
-                        ? "emerald"
-                        : verifyOnly
-                          ? "amber"
-                          : status === "blocked"
-                            ? "red"
-                            : status === "in_progress"
-                              ? "sky"
-                              : "slate"
-                    }
-                  >
-                    {verifyOnly ? "Verify" : STATUS_COPY[status]}
+                  <Badge className="mt-2 w-fit" tone={status === "complete" ? "emerald" : verifyOnly ? "amber" : status === "blocked" ? "red" : status === "in_progress" ? "sky" : "slate"}>
+                    {verifyOnly ? "Verify" : STATUS_COPY[status] ?? status}
                   </Badge>
                 </Link>
               </li>
@@ -114,68 +123,31 @@ export default function DashboardPage() {
         </ol>
       </section>
 
-      <div className="grid gap-4 lg:grid-cols-3">
-        <Card>
-          <CardTitle>MCCQE1 readiness</CardTitle>
-          <p className="mt-3 text-2xl font-semibold">{insights.readiness.label}</p>
-          <p className="mt-1 text-sm text-slate-600">
-            {insights.readiness.score === null ? "Log sessions to build an evidence index." : `${insights.readiness.score}/100 evidence index`}
-          </p>
-          <ProgressBar value={insights.readiness.score ?? 0} className="mt-4" />
-        </Card>
-        <Card>
-          <CardTitle>Applications</CardTitle>
-          <p className="mt-3 text-2xl font-semibold">
-            {pipeline.submitted}
-            <span className="text-base font-normal text-slate-500"> / {pipeline.programs} submitted</span>
-          </p>
-          <p className="mt-1 text-sm text-slate-600">
-            {pipeline.invited} invited · {pipeline.ranked} on rank list
-          </p>
-        </Card>
-        <Card>
-          <CardTitle>Upcoming</CardTitle>
-          <ul className="mt-3 space-y-2 text-sm text-slate-700">
-            {state.programs.slice(0, 3).map((p) => (
-              <li key={p.id} className="flex justify-between gap-2">
-                <span className="truncate">{p.name.replace(" (demo)", "")}</span>
-                <span className="shrink-0 text-slate-500">{p.deadline}</span>
-              </li>
-            ))}
-          </ul>
-        </Card>
-      </div>
-
       <div className="grid gap-4 lg:grid-cols-2">
         <Card>
-          <CardTitle>Items to verify</CardTitle>
-          {verify.length === 0 ? (
-            <p className="mt-3 text-sm text-slate-600">Nothing waiting on source confirmation.</p>
+          <CardTitle>Upcoming</CardTitle>
+          {upcoming.length === 0 ? (
+            <p className="mt-3 text-sm text-slate-600">No personal dates recorded yet.</p>
           ) : (
-            <ul className="mt-3 space-y-3">
-              {verify.slice(0, 4).map((issue, i) => (
-                <li key={`${issue.title}-${i}`} className="rounded-xl bg-amber-50/80 px-3 py-2.5">
-                  <p className="text-xs font-medium text-amber-800">{BLOCKER_KIND_LABEL[issue.kind]}</p>
-                  <p className="mt-0.5 text-sm font-medium text-[#0b1f33]">{formatIssueHeadline(issue)}</p>
+            <ul className="mt-3 space-y-2 text-sm">
+              {upcoming.map((u) => (
+                <li key={u.label}>
+                  <Link href={u.href} className="text-teal-800">
+                    {u.label} · {u.date.slice(0, 10)}
+                  </Link>
                 </li>
               ))}
             </ul>
           )}
         </Card>
         <Card>
-          <CardTitle>Action items</CardTitle>
-          {blockers.length === 0 ? (
-            <p className="mt-3 text-sm text-slate-600">No urgent blockers in the tracker.</p>
-          ) : (
-            <ul className="mt-3 space-y-3">
-              {blockers.slice(0, 4).map((issue, i) => (
-                <li key={`${issue.title}-${i}`} className="rounded-xl bg-slate-50 px-3 py-2.5">
-                  <p className="text-xs font-medium text-slate-500">{BLOCKER_KIND_LABEL[issue.kind]}</p>
-                  <p className="mt-0.5 text-sm font-medium text-[#0b1f33]">{formatIssueHeadline(issue)}</p>
-                </li>
-              ))}
-            </ul>
-          )}
+          <CardTitle>Attention</CardTitle>
+          <ul className="mt-3 space-y-2 text-sm text-slate-600">
+            {journey.flags.issues.slice(0, 5).map((i) => (
+              <li key={i.title}>{i.title}</li>
+            ))}
+            {journey.flags.issues.length === 0 ? <li>No tracker holds right now.</li> : null}
+          </ul>
         </Card>
       </div>
     </div>

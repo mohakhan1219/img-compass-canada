@@ -66,14 +66,14 @@ describe("requirement versioning and provincial blockers", () => {
     expect(provincialBlockers(on.requirements, on.targetProvinceCodes).length).toBeGreaterThan(0);
   });
 
-  it("keeps requirements as data updates", () => {
-    const state = updateRequirement(createDemoState(), "req-bc-exam-demo", {
-      version: "demo-2026.9",
+  it("keeps personal tracking updates without rewriting official applicability", () => {
+    const state = updateRequirement(createDemoState(), "bc-language", {
       userStatus: "complete",
     });
-    const row = state.requirements.find((r) => r.id === "req-bc-exam-demo") as PathwayRequirement;
-    expect(row.version).toBe("demo-2026.9");
-    expect(row.fictional).toBe(true);
+    const row = state.requirements.find((r) => r.id === "bc-language") as PathwayRequirement;
+    expect(row.userStatus).toBe("complete");
+    expect(row.applicability).toBe("needs_verification");
+    expect(row.fictional).toBe(false);
   });
 });
 
@@ -81,12 +81,12 @@ describe("CaRMS progression", () => {
   it("counts submitted applications", () => {
     const state = createDemoState();
     expect(submittedPrograms(state.programs)).toHaveLength(1);
-    const next = updateProgram(state, "prog-northlake-fm", { applicationStatus: "submitted" });
+    const next = updateProgram(state, "track-utoronto-family-medicine", { applicationStatus: "submitted" });
     expect(submittedPrograms(next.programs)).toHaveLength(2);
   });
 
   it("detects duplicate ranks", () => {
-    const state = updateProgram(createDemoState(), "prog-northlake-fm", {
+    const state = updateProgram(createDemoState(), "track-utoronto-family-medicine", {
       rankIncluded: true,
       rankPosition: 1,
     });
@@ -96,9 +96,10 @@ describe("CaRMS progression", () => {
   it("match recording completes match stage", () => {
     const state = setMatchOutcome(createDemoState(), {
       status: "matched",
-      programId: "prog-harbour-im",
+      programId: "track-ubc-internal-medicine",
       recordedAt: "2026-03-10T12:00:00.000Z",
       notes: "",
+      nextCycleNotes: "",
     });
     expect(computeJourneySnapshot(state).status.match).toBe("complete");
     const pipe = computeCarmsPipeline(state.programs, state.matchOutcome);
@@ -106,7 +107,7 @@ describe("CaRMS progression", () => {
   });
 
   it("counts application track progress", () => {
-    const harbour = createDemoState().programs.find((p) => p.id === "prog-harbour-im")!;
+    const harbour = createDemoState().programs.find((p) => p.id === "track-ubc-internal-medicine")!;
     expect(applicationTrackProgress(harbour).done).toBe(4);
   });
 });
@@ -132,11 +133,11 @@ describe("migration and repositories", () => {
       sessions: [{ id: "x", endedAt: "2026-08-01T00:00:00.000Z" }],
       reviews: [],
     });
-    expect(migrated.version).toBe(2);
+    expect(migrated.version).toBe(3);
     expect(migrated.profile.displayName).toBe("Dr. Test");
     expect(migrated.sessions).toHaveLength(1);
     expect(migrated.nacStations.length).toBeGreaterThan(0);
-    expect(migrated.requirements.every((r) => r.fictional)).toBe(true);
+    expect(migrated.requirements.every((r) => r.fictional === false)).toBe(true);
   });
 
   it("appends NAC attempts immutably", () => {

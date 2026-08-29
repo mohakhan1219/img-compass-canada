@@ -17,7 +17,7 @@ describe("blocker classification", () => {
     const issues = collectJourneyIssues(createDemoState(), Date.parse("2026-08-20T00:00:00Z"));
     const prov = issues.filter((i) => i.stage === "provincial");
     expect(prov.length).toBeGreaterThan(0);
-    expect(prov.every((i) => i.fictional)).toBe(true);
+    expect(prov.every((i) => i.fictional === false)).toBe(true);
   });
 
   it("keeps MCCQE1 duration confirmation as administrative", () => {

@@ -22,6 +22,7 @@ export default function MatchPage() {
         programId,
         recordedAt: new Date().toISOString(),
         notes: match?.notes ?? "",
+        nextCycleNotes: match?.nextCycleNotes ?? "",
       }),
     );
   }
@@ -40,9 +41,11 @@ export default function MatchPage() {
           <h2 className="mt-3 text-3xl font-semibold tracking-tight">{program.name.replace(" (demo)", "")}</h2>
           <p className="mt-2 text-lg text-teal-100">{program.specialty}</p>
           <p className="mt-5 max-w-xl text-sm text-teal-50/90">
-            Congratulations — this is a planning record in IMG Compass, not an official CaRMS result.
-            Confirm next steps with the programme and your documents.
+            Continue into residency onboarding. Confirm next steps with the programme and the college.
           </p>
+          <a className="mt-4 inline-block text-sm font-medium text-teal-100 underline" href="/residency">
+            Open residency onboarding
+          </a>
         </Card>
       ) : null}
 
@@ -51,9 +54,12 @@ export default function MatchPage() {
           <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Unmatched</p>
           <h2 className="mt-2 text-2xl font-semibold text-[#0b1f33]">No match recorded</h2>
           <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-slate-600">
-            Review leftover programmes, second-iteration options, and provincial routes. This tracker
-            stays available while you plan the next cycle.
+            Review second iteration when it applies, post-match options, and next-cycle planning. Capture a personal
+            retrospective. This tracker stays available.
           </p>
+          <a className="mt-3 inline-block text-sm text-teal-800" href="https://www.carms.ca/match/r-1-main-residency-match/applicant/r-1-second-iteration-timeline/" target="_blank" rel="noreferrer">
+            View official source ↗
+          </a>
         </Card>
       ) : null}
 

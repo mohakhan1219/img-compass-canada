@@ -65,6 +65,12 @@ variable "enable_nat" {
   description = "false = Option B (public-subnet Fargate, no NAT). true = Option A (private Fargate + NAT). Keep false for this portfolio."
 }
 
+variable "enable_cognito" {
+  type        = bool
+  default     = false
+  description = "Optional Amazon Cognito User Pool. Default false so existing deploys do not add cost until opted in. Cognito MAU is effectively $0 at demo scale (50k MAU free tier); no SMS MFA."
+}
+
 variable "enable_load_balancer" {
   type        = bool
   default     = true

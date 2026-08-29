@@ -29,7 +29,7 @@ export default function InterviewsPage() {
       <PageHeader
         eyebrow="Match"
         title="Interviews"
-        description="Track invitations and rehearse answers before interview day."
+        description="Track invitations separately from rehearsal. Completing an interview can feed ranking."
       />
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">

@@ -3,20 +3,27 @@
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { AppShell } from "@/components/app-shell";
-import { useStore } from "@/components/store-provider";
+import { isSignedIn, useStore } from "@/components/store-provider";
 
-const PUBLIC = new Set(["/", "/about"]);
+const PUBLIC = new Set(["/", "/about", "/forgot"]);
 
 export function AuthGate({ children }: { children: React.ReactNode }) {
   const { state, ready, signOut } = useStore();
   const router = useRouter();
   const pathname = usePathname();
+  const signedIn = isSignedIn(state);
 
   useEffect(() => {
     if (!ready) return;
-    if (!state.demoSignedIn && !PUBLIC.has(pathname)) router.replace("/");
-    if (state.demoSignedIn && pathname === "/") router.replace("/dashboard");
-  }, [ready, state.demoSignedIn, pathname, router]);
+    if (!signedIn && !PUBLIC.has(pathname) && !pathname.startsWith("/forgot")) router.replace("/");
+    if (signedIn && pathname === "/") {
+      if (!state.profile.onboardingComplete && state.authMode === "account") router.replace("/onboarding");
+      else router.replace("/dashboard");
+    }
+    if (signedIn && state.authMode === "account" && !state.profile.onboardingComplete && pathname !== "/onboarding" && pathname !== "/about") {
+      router.replace("/onboarding");
+    }
+  }, [ready, signedIn, pathname, router, state.profile.onboardingComplete, state.authMode]);
 
   if (!ready) {
     return (
@@ -26,8 +33,9 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
     );
   }
 
-  if (!state.demoSignedIn) return <>{children}</>;
+  if (!signedIn) return <>{children}</>;
   if (pathname === "/") return <>{children}</>;
+  if (pathname === "/onboarding") return <>{children}</>;
 
   return (
     <AppShell state={state} onSignOut={signOut}>

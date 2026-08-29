@@ -15,7 +15,8 @@ export class PostgresStateRepository implements LearnerStateRepository {
     );
     const row = result.rows[0];
     if (!row) return null;
-    return migrateToCurrent(row.payload);
+    const mode = learnerId === "demo-alex" ? "demo" : "empty";
+    return migrateToCurrent(row.payload, mode);
   }
 
   async save(learnerId: string, state: AppState): Promise<void> {

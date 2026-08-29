@@ -2,48 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  BookOpen,
-  Building2,
-  Compass,
-  FileText,
-  Languages,
-  ListOrdered,
-  LogOut,
-  Map,
-  MessageSquare,
-  Settings,
-  Stethoscope,
-  Trophy,
-  UserRound,
-} from "lucide-react";
-import { JOURNEY_STAGES } from "@/domain/stages";
-import { computeJourneySnapshot, issuesForStage, isVerificationHold } from "@/domain/journey";
+import { ChevronDown, Compass, LogOut, Menu, X } from "lucide-react";
+import { useState } from "react";
+import { NAV_GROUPS } from "@/domain/stages";
+import { computeJourneySnapshot } from "@/domain/journey";
 import { Button } from "@/components/ui/button";
 import { PortfolioBanner } from "@/components/portfolio-banner";
 import { cn } from "@/lib/utils";
 import type { AppState } from "@/domain/types";
-
-const ICONS: Record<string, typeof Compass> = {
-  profile: UserRound,
-  mccqe1: BookOpen,
-  nac: Stethoscope,
-  language: Languages,
-  provincial: Map,
-  carms: Building2,
-  applications: FileText,
-  interviews: MessageSquare,
-  ranking: ListOrdered,
-  match: Trophy,
-};
-
-const statusTone: Record<string, string> = {
-  complete: "bg-emerald-400",
-  in_progress: "bg-sky-400",
-  blocked: "bg-red-400",
-  verify_hold: "bg-amber-400",
-  not_started: "bg-slate-500",
-};
 
 export function AppShell({
   children,
@@ -56,6 +22,7 @@ export function AppShell({
 }) {
   const pathname = usePathname();
   const journey = computeJourneySnapshot(state);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-[#f4f1ea]">
@@ -72,62 +39,68 @@ export function AppShell({
             </span>
           </Link>
           <nav className="flex-1 overflow-y-auto px-3 pb-4">
-            <p className="mb-2 px-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
-              Journey
-            </p>
-            <ul className="space-y-0.5">
-              {JOURNEY_STAGES.map((stage) => {
-                const Icon = ICONS[stage.id] ?? Compass;
-                const active = pathname === stage.href || pathname.startsWith(`${stage.href}/`);
-                const status = journey.status[stage.id];
-                const stageIssues = issuesForStage(journey.flags.issues, stage.id);
-                const verifyHold =
-                  status === "blocked" &&
-                  stageIssues.length > 0 &&
-                  stageIssues.every((x) => isVerificationHold(x.kind));
-                const toneKey = verifyHold ? "verify_hold" : status;
+            {NAV_GROUPS.map((group) => {
+              if ("items" in group && group.items) {
                 return (
-                  <li key={stage.id}>
-                    <Link
-                      href={stage.href}
-                      className={cn(
-                        "flex items-center gap-2.5 rounded-xl px-2.5 py-2 text-sm transition-colors",
-                        active
-                          ? "bg-white/10 font-medium text-white"
-                          : "text-slate-300 hover:bg-white/5 hover:text-white",
-                      )}
-                    >
-                      <span className={cn("h-1.5 w-1.5 shrink-0 rounded-full", statusTone[toneKey])} />
-                      <Icon className="h-4 w-4 shrink-0 opacity-80" />
-                      <span className="flex-1 truncate">{stage.label}</span>
-                    </Link>
-                  </li>
+                  <div key={group.id} className="mb-4">
+                    <p className="mb-1 px-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+                      {group.label}
+                    </p>
+                    <ul className="space-y-0.5">
+                      {group.items.map((item) => {
+                        const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
+                        return (
+                          <li key={item.href}>
+                            <Link
+                              href={item.href}
+                              className={cn(
+                                "block rounded-xl px-2.5 py-2 text-sm",
+                                active ? "bg-white/10 font-medium text-white" : "text-slate-300 hover:bg-white/5 hover:text-white",
+                              )}
+                            >
+                              {item.label}
+                            </Link>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
                 );
-              })}
-            </ul>
+              }
+              const href = "href" in group ? group.href : "/dashboard";
+              const active = pathname === href;
+              return (
+                <Link
+                  key={group.id}
+                  href={href}
+                  className={cn(
+                    "mb-1 block rounded-xl px-2.5 py-2 text-sm",
+                    active ? "bg-white/10 font-medium text-white" : "text-slate-300 hover:bg-white/5 hover:text-white",
+                  )}
+                >
+                  {group.label}
+                </Link>
+              );
+            })}
           </nav>
-          <div className="border-t border-white/10 p-3">
-            <Link
-              href="/settings"
-              className="flex items-center gap-2 rounded-xl px-2.5 py-2 text-sm text-slate-300 hover:bg-white/5 hover:text-white"
-            >
-              <Settings className="h-4 w-4" />
-              Settings
-            </Link>
-          </div>
         </aside>
 
         <div className="min-w-0 flex-1">
           <header className="sticky top-0 z-20 border-b border-[#e4ddd2] bg-[#fffcf8]/90 backdrop-blur">
             <div className="flex items-center justify-between gap-3 px-4 py-3 sm:px-8">
+              <button type="button" className="lg:hidden" onClick={() => setMobileOpen((v) => !v)} aria-label="Menu">
+                {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              </button>
               <Link href="/dashboard" className="flex items-center gap-2 font-semibold text-[#0b1f33] lg:hidden">
                 <Compass className="h-5 w-5 text-teal-700" />
                 IMG Compass
               </Link>
-              <p className="hidden text-sm text-slate-500 lg:block">Your path to Canadian residency</p>
+              <p className="hidden text-sm text-slate-500 lg:block">
+                You are here: {journey.flags.currentLabel}
+              </p>
               <div className="ml-auto flex items-center gap-3 text-sm">
                 <span className="hidden max-w-[200px] truncate font-medium text-[#0b1f33] sm:inline">
-                  {state.profile.displayName}
+                  {state.profile.displayName || "IMG learner"}
                 </span>
                 <Button variant="ghost" size="sm" onClick={onSignOut}>
                   <LogOut className="h-4 w-4" />
@@ -135,23 +108,63 @@ export function AppShell({
                 </Button>
               </div>
             </div>
-            <nav className="flex gap-1 overflow-x-auto px-3 pb-3 lg:hidden">
-              {JOURNEY_STAGES.map((stage) => {
-                const active = pathname === stage.href || pathname.startsWith(`${stage.href}/`);
-                return (
+            {mobileOpen ? (
+              <nav className="space-y-2 border-t border-[#e4ddd2] px-4 py-3 lg:hidden">
+                {NAV_GROUPS.map((group) => (
+                  <div key={group.id}>
+                    {"items" in group && group.items ? (
+                      <>
+                        <p className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                          <ChevronDown className="h-3 w-3" /> {group.label}
+                        </p>
+                        <div className="mt-1 flex flex-wrap gap-1">
+                          {group.items.map((item) => (
+                            <Link
+                              key={item.href}
+                              href={item.href}
+                              onClick={() => setMobileOpen(false)}
+                              className="rounded-full bg-white px-3 py-1.5 text-xs ring-1 ring-[#e4ddd2]"
+                            >
+                              {item.label}
+                            </Link>
+                          ))}
+                        </div>
+                      </>
+                    ) : (
+                      <Link
+                        href={"href" in group ? group.href : "/dashboard"}
+                        onClick={() => setMobileOpen(false)}
+                        className="inline-block rounded-full bg-white px-3 py-1.5 text-xs ring-1 ring-[#e4ddd2]"
+                      >
+                        {group.label}
+                      </Link>
+                    )}
+                  </div>
+                ))}
+              </nav>
+            ) : (
+              <nav className="flex gap-1 overflow-x-auto px-3 pb-3 lg:hidden">
+                {[
+                  ["/dashboard", "Home"],
+                  ["/journey", "Journey"],
+                  ["/mccqe1", "MCCQE"],
+                  ["/programs", "Programs"],
+                  ["/carms", "CaRMS"],
+                  ["/match", "Match"],
+                ].map(([href, label]) => (
                   <Link
-                    key={stage.id}
-                    href={stage.href}
+                    key={href}
+                    href={href}
                     className={cn(
                       "shrink-0 rounded-full px-3 py-1.5 text-xs font-medium",
-                      active ? "bg-teal-700 text-white" : "bg-white text-slate-600 ring-1 ring-[#e4ddd2]",
+                      pathname === href ? "bg-teal-700 text-white" : "bg-white text-slate-600 ring-1 ring-[#e4ddd2]",
                     )}
                   >
-                    {stage.label}
+                    {label}
                   </Link>
-                );
-              })}
-            </nav>
+                ))}
+              </nav>
+            )}
           </header>
           <main className="px-4 py-8 sm:px-8">{children}</main>
         </div>

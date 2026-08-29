@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Card, CardTitle } from "@/components/ui/card";
 import { PageHeader } from "@/components/page-header";
-import { DemoChip } from "@/components/demo-chip";
+import { MATCH_CYCLES } from "@/reference/match-cycles";
 import { computeCarmsPipeline, programPipelineSteps } from "@/domain/carms";
 import { CANADIAN_PROVINCES } from "@/domain/requirements";
 import { useStore } from "@/components/store-provider";
@@ -12,14 +12,33 @@ import { cn } from "@/lib/utils";
 export default function CarmsPage() {
   const { state } = useStore();
   const pipe = computeCarmsPipeline(state.programs, state.matchOutcome);
+  const cycle = MATCH_CYCLES.find((c) => c.id === state.profile.targetMatchCycleId) ?? MATCH_CYCLES[0];
 
   return (
     <div className="space-y-8">
       <PageHeader
         eyebrow="Match"
         title="CaRMS pipeline"
-        description="Follow each programme from saved through ranked. Status only — no document uploads."
+        description="Match-cycle command center. Dates are sourced from CaRMS and labelled with last verified."
       />
+
+      <Card>
+        <CardTitle>{cycle.name}</CardTitle>
+        <p className="mt-1 text-sm text-slate-500">
+          Last verified {cycle.lastVerifiedDate} · {cycle.sourceStatus}
+        </p>
+        <a className="mt-2 inline-block text-sm text-teal-800" href={cycle.sourceUrl} target="_blank" rel="noreferrer">
+          View official source ↗
+        </a>
+        <ol className="mt-4 space-y-2 text-sm">
+          {cycle.events.map((e) => (
+            <li key={e.id} className="flex justify-between gap-3">
+              <span>{e.label}</span>
+              <span className="text-slate-500">{e.occursOn.slice(0, 10)}</span>
+            </li>
+          ))}
+        </ol>
+      </Card>
 
       <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-5">
         {[
@@ -48,8 +67,7 @@ export default function CarmsPage() {
           return (
             <Card key={p.id}>
               <div className="flex items-start justify-between gap-2">
-                <CardTitle>{p.name.replace(" (demo)", "")}</CardTitle>
-                <DemoChip />
+                <CardTitle>{p.name}</CardTitle>
               </div>
               <p className="mt-1 text-sm text-slate-500">
                 {p.specialty} · {CANADIAN_PROVINCES.find((x) => x.code === p.provinceCode)?.name}

@@ -49,6 +49,36 @@ export default function ApplicationsPage() {
         ))}
       </div>
 
+      <Card>
+        <CardTitle>List</CardTitle>
+        <div className="mt-3 overflow-x-auto">
+          <table className="w-full text-left text-sm">
+            <thead>
+              <tr className="text-xs uppercase text-slate-500">
+                <th className="py-2">Program</th>
+                <th>Province</th>
+                <th>Specialty</th>
+                <th>Status</th>
+                <th>Deadline</th>
+              </tr>
+            </thead>
+            <tbody>
+              {[...state.programs]
+                .sort((a, b) => a.deadline.localeCompare(b.deadline))
+                .map((p) => (
+                  <tr key={p.id} className="border-t border-[#eee8de]">
+                    <td className="py-2 font-medium">{p.name}</td>
+                    <td>{p.provinceCode}</td>
+                    <td>{p.specialty}</td>
+                    <td>{p.applicationStatus.replace("_", " ")}</td>
+                    <td>{p.deadline}</td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
+        </div>
+      </Card>
+
       <div className="grid gap-4 lg:grid-cols-3">
         {state.programs.map((p) => {
           const { done, total } = applicationTrackProgress(p);

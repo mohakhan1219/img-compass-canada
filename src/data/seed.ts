@@ -1,24 +1,35 @@
 import type {
   AppState,
   CarmsProgram,
+  CredentialRecord,
+  ExamRecord,
+  ImgProfile,
   InterviewPrompt,
   LanguagePlan,
   NacStation,
+  OnboardingTask,
   PathwayRequirement,
 } from "@/domain/types";
 import { APP_STATE_VERSION } from "@/domain/types";
+import { CREDENTIAL_CATALOG } from "@/reference/catalogs";
+import { LANGUAGE_EXAM_CATALOG } from "@/reference/catalogs";
+import { REFERENCE_REQUIREMENTS } from "@/reference/pathway-requirements";
+import { referenceProgramById } from "@/reference/programs";
+import { institutionById } from "@/reference/institutions";
+import { specialtyById } from "@/reference/specialties";
 
 export const DEMO_CATALOGS = [
   {
     id: "compass-core-qbank",
-    name: "Compass Core Qbank (demo)",
+    name: "Compass Core Qbank (personal tracker)",
     kind: "qbank" as const,
     totalQuestions: 1200,
-    disclaimer: "Original Compass catalog for volume tracking.",
+    disclaimer:
+      "Original Compass catalog for volume tracking only. This is not the MCCQE universe and is not MCC content.",
   },
   {
     id: "compass-clinical-cases",
-    name: "Compass Clinical Cases (demo)",
+    name: "Compass Clinical Cases (personal tracker)",
     kind: "cases" as const,
     totalQuestions: 180,
     disclaimer: "Synthetic case set for logging practice volume. Not MCC, NAC, or publisher content.",
@@ -28,75 +39,91 @@ export const DEMO_CATALOGS = [
 const DEMO_NOW = Date.parse("2026-08-20T15:00:00.000Z");
 const iso = (offsetHours: number) => new Date(DEMO_NOW - offsetHours * 3600_000).toISOString();
 
-export const DEMO_NAC_STATIONS: NacStation[] = [
+export const PRACTICE_NAC_STATIONS: NacStation[] = [
   {
     id: "nac-hx-fatigue",
-    title: "Adult with fatigue (demo)",
+    title: "Adult with fatigue",
     category: "history_taking",
+    clinicalArea: "Internal medicine",
     suggestedMinutes: 8,
     prompt:
-      "Original demo stem: a clinic visit for several weeks of tiredness. Practise a structured history. Not an official NAC station.",
-    disclaimer: "Fictional station for timing practice only.",
+      "Original Compass stem: a clinic visit for several weeks of tiredness. Practise a structured history. Not an official NAC station.",
+    disclaimer: "Original timing practice only.",
+    userCreated: false,
   },
   {
     id: "nac-hx-cough",
-    title: "Persistent cough (demo)",
+    title: "Persistent cough",
     category: "history_taking",
+    clinicalArea: "Respiratory",
     suggestedMinutes: 8,
-    prompt: "Original demo stem: cough for six weeks. Not MCC content.",
-    disclaimer: "Fictional station for timing practice only.",
+    prompt: "Original Compass stem: cough for six weeks.",
+    disclaimer: "Original timing practice only.",
+    userCreated: false,
   },
   {
     id: "nac-pe-knee",
-    title: "Knee examination (demo)",
+    title: "Knee examination",
     category: "physical_examination",
+    clinicalArea: "Musculoskeletal",
     suggestedMinutes: 6,
-    prompt: "Original demo: describe a focused knee exam sequence. Not a licensed OSCE script.",
-    disclaimer: "Fictional station for timing practice only.",
+    prompt: "Original Compass: describe a focused knee exam sequence.",
+    disclaimer: "Original timing practice only.",
+    userCreated: false,
   },
   {
     id: "nac-pe-resp",
-    title: "Respiratory examination (demo)",
+    title: "Respiratory examination",
     category: "physical_examination",
+    clinicalArea: "Respiratory",
     suggestedMinutes: 6,
-    prompt: "Original demo: talk through inspection, percussion, auscultation. Not an official station.",
-    disclaimer: "Fictional station for timing practice only.",
+    prompt: "Original Compass: talk through inspection, percussion, auscultation.",
+    disclaimer: "Original timing practice only.",
+    userCreated: false,
   },
   {
     id: "nac-comm-results",
-    title: "Explaining a blood-test delay (demo)",
+    title: "Explaining a blood-test delay",
     category: "communication_counselling",
+    clinicalArea: "Communication",
     suggestedMinutes: 8,
-    prompt: "Original demo: a result is delayed. Practise clear, honest communication.",
-    disclaimer: "Fictional station for timing practice only.",
+    prompt: "Original Compass: a result is delayed. Practise clear, honest communication.",
+    disclaimer: "Original timing practice only.",
+    userCreated: false,
   },
   {
     id: "nac-comm-lifestyle",
-    title: "Activity counselling after a sprain (demo)",
+    title: "Activity counselling after a sprain",
     category: "communication_counselling",
+    clinicalArea: "Musculoskeletal",
     suggestedMinutes: 8,
-    prompt: "Original demo: return-to-activity counselling. Not NAC copyrighted material.",
-    disclaimer: "Fictional station for timing practice only.",
+    prompt: "Original Compass: return-to-activity counselling.",
+    disclaimer: "Original timing practice only.",
+    userCreated: false,
   },
   {
     id: "nac-dx-chest",
-    title: "Chest pain differentials (demo)",
+    title: "Chest pain differentials",
     category: "differential_diagnosis",
+    clinicalArea: "Emergency / clinic",
     suggestedMinutes: 6,
-    prompt: "Original demo: list and justify a short differential. Not a real exam item.",
-    disclaimer: "Fictional station for timing practice only.",
+    prompt: "Original Compass: list and justify a short differential.",
+    disclaimer: "Original timing practice only.",
+    userCreated: false,
   },
   {
     id: "nac-dx-abdo",
-    title: "Abdominal pain differentials (demo)",
+    title: "Abdominal pain differentials",
     category: "differential_diagnosis",
+    clinicalArea: "Gastroenterology",
     suggestedMinutes: 6,
-    prompt: "Original demo: organise a differential by urgency. Not MCC/NAC content.",
-    disclaimer: "Fictional station for timing practice only.",
+    prompt: "Original Compass: organise a differential by urgency.",
+    disclaimer: "Original timing practice only.",
+    userCreated: false,
   },
 ];
 
-export const DEMO_INTERVIEW_BANK: InterviewPrompt[] = [
+export const PRACTICE_INTERVIEW_BANK: InterviewPrompt[] = [
   {
     id: "int-beh-team",
     kind: "behavioral",
@@ -107,12 +134,6 @@ export const DEMO_INTERVIEW_BANK: InterviewPrompt[] = [
     id: "int-beh-fail",
     kind: "behavioral",
     prompt: "Describe a mistake you made in training and what you changed afterward.",
-    disclaimer: "Original Compass prompt.",
-  },
-  {
-    id: "int-beh-lead",
-    kind: "behavioral",
-    prompt: "When have you coordinated care across a busy service?",
     disclaimer: "Original Compass prompt.",
   },
   {
@@ -128,12 +149,6 @@ export const DEMO_INTERVIEW_BANK: InterviewPrompt[] = [
     disclaimer: "Original Compass scenario. Not a real ethics-board case.",
   },
   {
-    id: "int-eth-boundary",
-    kind: "ethical",
-    prompt: "A patient asks you to connect on social media. How do you respond?",
-    disclaimer: "Original Compass scenario.",
-  },
-  {
     id: "int-clin-fever",
     kind: "clinical",
     prompt: "Walk through your approach to fever in a returning traveller in clinic.",
@@ -146,216 +161,296 @@ export const DEMO_INTERVIEW_BANK: InterviewPrompt[] = [
     disclaimer: "Original Compass prompt.",
   },
   {
-    id: "int-clin-meds",
-    kind: "clinical",
-    prompt: "How would you reconcile a long medication list with a new prescription?",
+    id: "int-comm-teach",
+    kind: "communication",
+    prompt: "How do you explain a change in management when a patient expected a different plan?",
     disclaimer: "Original Compass prompt.",
   },
+  {
+    id: "int-fit-why",
+    kind: "program_fit",
+    prompt: "Why this program, and what would you contribute in the first six months?",
+    disclaimer: "Original Compass prompt. Not from a real faculty.",
+  },
 ];
 
-export const DEMO_LANGUAGE_PLANS: LanguagePlan[] = [
-  {
-    examKind: "oet_medicine",
-    applicability: "needs_verification",
-    testDate: "2026-11-15",
-    targetOverall: "Confirm with programmes",
-    notes: "Confirm whether OET Medicine is accepted by target programmes.",
-  },
-  {
-    examKind: "ielts_academic",
-    applicability: "unknown",
+export function emptyExam(): ExamRecord {
+  return { status: "", scheduledDate: "", attempt: "", result: "", notes: "" };
+}
+
+export function emptyProfile(): ImgProfile {
+  return {
+    displayName: "",
+    timezone: "America/Toronto",
+    notes: "",
+    countryOfResidence: "",
+    preferredLanguage: "",
+    medicalSchoolCountry: "",
+    medicalSchoolId: "",
+    medicalSchoolOther: "",
+    graduationYear: "",
+    medicalDegree: "",
+    internshipStatus: "",
+    internshipDuration: "",
+    graduationStatus: "",
+    postgraduateTraining: "",
+    postgraduateSpecialty: "",
+    postgraduateCountry: "",
+    postgraduateDuration: "",
+    independentPractice: "",
+    yearsOfPractice: "",
+    canadaStatus: "",
+    careerGoal: "",
+    targetMatchCycleId: "r1-2027-first",
+    specialtyInterestIds: [],
+    relocateAnywhere: "",
+    physiciansapplyStatus: "",
+    credentialVerificationStatus: "",
+    mccqeStatus: "",
+    nacExamStatus: "",
+    languageEvidenceStatus: "",
+    onboardingComplete: false,
+    targetExamWindow: "",
+  };
+}
+
+export function defaultCredentials(): CredentialRecord[] {
+  return CREDENTIAL_CATALOG.map((c) => ({
+    id: c.id,
+    kind: c.id,
+    status: "" as const,
+    notes: "",
+    targetDate: "",
+  }));
+}
+
+export function defaultLanguagePlans(): LanguagePlan[] {
+  return LANGUAGE_EXAM_CATALOG.map((e) => ({
+    examKind: e.id,
+    applicability: "needs_verification" as const,
     testDate: "",
+    resultDate: "",
     targetOverall: "",
-    notes: "Not classified until programme language rules are checked.",
-  },
-  {
-    examKind: "celpip",
-    applicability: "not_required",
-    testDate: "",
-    targetOverall: "",
-    notes: "Marked not required for this planning profile.",
-  },
-];
+    componentScores: "",
+    expiryDate: "",
+    notes: "",
+  }));
+}
 
-const FICTIONAL = true as const;
+export function mergeReferenceRequirements(
+  userRows: PathwayRequirement[] | undefined,
+): PathwayRequirement[] {
+  const byId = new Map((userRows ?? []).map((r) => [r.id, r]));
+  return REFERENCE_REQUIREMENTS.map((ref) => {
+    const user = byId.get(ref.id);
+    return {
+      id: ref.id,
+      provinceCode: ref.provinceCode,
+      category: ref.category,
+      name: ref.name,
+      applicability: ref.applicability,
+      userStatus: user?.userStatus ?? "not_started",
+      authority: ref.authority,
+      sourceUrl: ref.sourceUrl,
+      effectiveDate: ref.effectiveDate,
+      lastVerifiedDate: ref.lastVerifiedDate,
+      version: ref.version,
+      notes: user?.notes ?? "",
+      blocker: user?.blocker ?? false,
+      targetDate: user?.targetDate ?? "",
+      fictional: false,
+    };
+  });
+}
 
-export const DEMO_REQUIREMENTS: PathwayRequirement[] = [
-  {
-    id: "req-on-licence-demo",
-    provinceCode: "ON",
-    category: "Licensure",
-    name: "Independent practice certificate",
-    applicability: "needs_verification",
-    userStatus: "not_started",
-    authority: "CPSO (sample)",
-    sourceUrl: "",
-    effectiveDate: "2026-01-01",
-    lastVerifiedDate: "2026-01-15",
-    version: "2026.1",
-    notes: "Confirm current independent-practice route with the college.",
-    blocker: false,
-    fictional: FICTIONAL,
-  },
-  {
-    id: "req-on-work-demo",
-    provinceCode: "ON",
-    category: "Work authorization",
-    name: "Work authorization",
-    applicability: "unknown",
-    userStatus: "not_started",
-    authority: "IRCC (sample)",
-    sourceUrl: "",
-    effectiveDate: "2026-01-01",
-    lastVerifiedDate: "2025-06-01",
-    version: "2025.2",
-    notes: "Last reviewed date is older than six months — re-check status.",
-    blocker: true,
-    fictional: FICTIONAL,
-  },
-  {
-    id: "req-on-return-demo",
-    provinceCode: "ON",
-    category: "Return of service",
-    name: "Return of service",
-    applicability: "not_required",
-    userStatus: "not_applicable",
-    authority: "Ontario Ministry of Health (sample)",
-    sourceUrl: "",
-    effectiveDate: "2026-01-01",
-    lastVerifiedDate: "2026-07-01",
-    version: "2026.1",
-    notes: "Classified as not required for this planning profile.",
-    blocker: false,
-    fictional: FICTIONAL,
-  },
-  {
-    id: "req-bc-lang-demo",
-    provinceCode: "BC",
-    category: "Language",
-    name: "Language evidence",
-    applicability: "applicable",
-    userStatus: "in_progress",
-    authority: "CPSBC (sample)",
-    sourceUrl: "",
-    effectiveDate: "2026-03-01",
-    lastVerifiedDate: "2026-08-01",
-    version: "2026.3",
-    notes: "Collect accepted test results before applying.",
-    blocker: false,
-    fictional: FICTIONAL,
-  },
-  {
-    id: "req-bc-exam-demo",
-    provinceCode: "BC",
-    category: "Exams",
-    name: "Exam sequence",
-    applicability: "required",
-    userStatus: "in_progress",
-    authority: "MCC (sample)",
-    sourceUrl: "",
-    effectiveDate: "2026-01-01",
-    lastVerifiedDate: "2026-08-01",
-    version: "2026.1",
-    notes: "Track MCCQE1 and NAC against programme timelines.",
-    blocker: false,
-    fictional: FICTIONAL,
-  },
-  {
-    id: "req-ab-orient-demo",
-    provinceCode: "AB",
-    category: "Orientation",
-    name: "Practice orientation",
-    applicability: "unknown",
-    userStatus: "not_started",
-    authority: "CPSA (sample)",
-    sourceUrl: "",
-    effectiveDate: "2026-01-01",
-    lastVerifiedDate: "2026-02-01",
-    version: "2026.1",
-    notes: "Confirm whether an orientation programme applies.",
-    blocker: false,
-    fictional: FICTIONAL,
-  },
-];
-
-export const DEMO_PROGRAMS: CarmsProgram[] = [
-  {
-    id: "prog-northlake-fm",
-    name: "Northlake Family Medicine (demo)",
-    specialty: "Family medicine",
-    provinceCode: "ON",
-    eligibilityStatus: "needs_verification",
-    cvStatus: "in_progress",
-    letterStatus: "not_started",
-    referencesStatus: "in_progress",
-    documents: [
-      { id: "doc-photo", label: "Photo (do not upload files here)", status: "not_required" },
-      { id: "doc-transcript-note", label: "Transcript status note (no file)", status: "in_progress" },
+export function trackingFromReference(referenceProgramId: string, extras: Partial<CarmsProgram> = {}): CarmsProgram {
+  const ref = referenceProgramById(referenceProgramId);
+  const inst = ref ? institutionById(ref.institutionId) : undefined;
+  const spec = ref ? specialtyById(ref.specialtyId) : undefined;
+  return {
+    id: extras.id ?? `track-${referenceProgramId}`,
+    referenceProgramId,
+    institutionId: ref?.institutionId ?? "",
+    name: extras.name ?? `${inst?.name ?? "Institution"} — ${spec?.name ?? "Specialty"}`,
+    specialty: spec?.name ?? extras.specialty ?? "",
+    provinceCode: ref?.provinceCode ?? extras.provinceCode ?? "",
+    officialUrl: ref?.officialUrl ?? "",
+    carmsUrl: ref?.carmsUrl ?? "https://www.carms.ca/",
+    lastVerifiedDate: ref?.lastVerifiedDate ?? "",
+    sourceStatus: ref?.sourceStatus ?? "needs_review",
+    eligibilityStatus: extras.eligibilityStatus ?? "needs_verification",
+    cvStatus: extras.cvStatus ?? "not_started",
+    letterStatus: extras.letterStatus ?? "not_started",
+    referencesStatus: extras.referencesStatus ?? "not_started",
+    documents: extras.documents ?? [
+      { id: "doc-photo", label: "Photo (do not upload files here)", status: "not_started" },
+      { id: "doc-questions", label: "Program-specific questions (tracker only)", status: "not_started" },
     ],
-    applicationStatus: "in_progress",
-    invitationStatus: "none",
-    interviewed: false,
-    rankIncluded: false,
-    rankPosition: null,
-    deadline: "2026-11-25",
-    notes: "First-choice family medicine programme.",
-    fictional: FICTIONAL,
-  },
-  {
-    id: "prog-harbour-im",
-    name: "Harbour Internal Medicine (demo)",
-    specialty: "Internal medicine",
-    provinceCode: "BC",
-    eligibilityStatus: "planning_eligible",
-    cvStatus: "complete",
-    letterStatus: "complete",
-    referencesStatus: "complete",
-    documents: [
-      { id: "doc-im-log", label: "Experience log (text only)", status: "complete" },
-    ],
-    applicationStatus: "submitted",
-    invitationStatus: "invited",
-    interviewed: true,
-    rankIncluded: true,
-    rankPosition: 1,
-    deadline: "2026-11-25",
-    notes: "Application submitted; interview completed.",
-    fictional: FICTIONAL,
-  },
-  {
-    id: "prog-prairie-peds",
-    name: "Prairie Paediatrics (demo)",
-    specialty: "Paediatrics",
-    provinceCode: "AB",
-    eligibilityStatus: "unknown",
-    cvStatus: "not_started",
-    letterStatus: "not_started",
-    referencesStatus: "not_started",
-    documents: [{ id: "doc-peds-ref", label: "Reference tracker (names only, no letters)", status: "not_started" }],
-    applicationStatus: "not_started",
-    invitationStatus: "none",
-    interviewed: false,
-    rankIncluded: false,
-    rankPosition: null,
-    deadline: "2026-11-25",
-    notes: "Early-stage paediatrics track.",
-    fictional: FICTIONAL,
-  },
-];
+    applicationStatus: extras.applicationStatus ?? "not_started",
+    invitationStatus: extras.invitationStatus ?? "none",
+    invitationDate: extras.invitationDate ?? "",
+    interviewAt: extras.interviewAt ?? "",
+    interviewTimezone: extras.interviewTimezone ?? "America/Toronto",
+    interviewMode: extras.interviewMode ?? "",
+    interviewLocation: extras.interviewLocation ?? "",
+    rsvpStatus: extras.rsvpStatus ?? "",
+    prepStatus: extras.prepStatus ?? "",
+    reflection: extras.reflection ?? "",
+    interviewed: extras.interviewed ?? false,
+    rankIncluded: extras.rankIncluded ?? false,
+    rankOverride: extras.rankOverride ?? false,
+    rankPosition: extras.rankPosition ?? null,
+    rankWhy: extras.rankWhy ?? "",
+    rankPros: extras.rankPros ?? "",
+    rankConcerns: extras.rankConcerns ?? "",
+    interviewImpression: extras.interviewImpression ?? "",
+    locationPreference: extras.locationPreference ?? "",
+    specialtyPreference: extras.specialtyPreference ?? "",
+    deadline: extras.deadline ?? "2026-11-26",
+    notes: extras.notes ?? "",
+    saved: extras.saved ?? true,
+    fictional: extras.fictional ?? false,
+  };
+}
 
-export function createDemoState(): AppState {
+export function defaultOnboardingTasks(): OnboardingTask[] {
+  return [
+    { id: "comm", label: "Program communication", status: "not_started", notes: "" },
+    { id: "licence", label: "Licensing / registration milestone", status: "not_started", notes: "" },
+    { id: "onboard", label: "Program onboarding tasks", status: "not_started", notes: "" },
+    { id: "orient", label: "Orientation", status: "not_started", notes: "" },
+    { id: "reloc", label: "Relocation", status: "not_started", notes: "" },
+  ];
+}
+
+export function createEmptyState(): AppState {
   return {
     version: APP_STATE_VERSION,
     demoSignedIn: false,
+    authMode: "anonymous",
+    profile: emptyProfile(),
+    catalogs: DEMO_CATALOGS,
+    sessions: [],
+    reviews: [],
+    nacStations: PRACTICE_NAC_STATIONS,
+    nacAttempts: [],
+    nacMocks: [],
+    languagePlans: defaultLanguagePlans(),
+    languageAttempts: [],
+    interviewBank: PRACTICE_INTERVIEW_BANK,
+    interviewSessions: [],
+    targetProvinceCodes: [],
+    requirements: mergeReferenceRequirements([]),
+    programs: [],
+    matchOutcome: { status: "awaiting", programId: null, recordedAt: "", notes: "", nextCycleNotes: "" },
+    credentials: defaultCredentials(),
+    mccqeExam: emptyExam(),
+    nacExam: emptyExam(),
+    carmsPhase: "registration",
+    onboardingTasks: defaultOnboardingTasks(),
+    residencyStartDate: "",
+  };
+}
+
+export const DEMO_NAC_STATIONS = PRACTICE_NAC_STATIONS;
+export const DEMO_INTERVIEW_BANK = PRACTICE_INTERVIEW_BANK;
+
+export function createDemoState(): AppState {
+  const empty = createEmptyState();
+  const programs: CarmsProgram[] = [
+    trackingFromReference("utoronto-family-medicine", {
+      id: "track-utoronto-family-medicine",
+      eligibilityStatus: "needs_verification",
+      cvStatus: "in_progress",
+      letterStatus: "not_started",
+      referencesStatus: "in_progress",
+      applicationStatus: "in_progress",
+      notes: "Personal tracking for University of Toronto Family Medicine research record.",
+    }),
+    trackingFromReference("ubc-internal-medicine", {
+      id: "track-ubc-internal-medicine",
+      cvStatus: "complete",
+      letterStatus: "complete",
+      referencesStatus: "complete",
+      applicationStatus: "submitted",
+      invitationStatus: "invited",
+      invitationDate: "2026-12-10",
+      interviewAt: "2027-01-22T15:00:00.000Z",
+      interviewMode: "virtual",
+      interviewLocation: "Zoom (user-entered)",
+      rsvpStatus: "accepted",
+      prepStatus: "in_progress",
+      interviewed: true,
+      rankIncluded: true,
+      rankPosition: 1,
+      rankWhy: "Strong fit with the training environment I observed (personal note).",
+      rankPros: "Location and generalist training.",
+      rankConcerns: "Competitive stream — confirm IMG criteria on CaRMS.",
+      interviewImpression: "Felt prepared on communication stations.",
+      notes: "Application submitted; interview completed (synthetic demo progress).",
+    }),
+    trackingFromReference("ualberta-pediatrics", {
+      id: "track-ualberta-pediatrics",
+      notes: "Early-stage paediatrics research.",
+    }),
+  ];
+
+  const targetProvinceCodes = ["ON", "BC"];
+  const requirements = mergeReferenceRequirements(
+    [
+      {
+        ...REFERENCE_REQUIREMENTS.find((x) => x.id === "on-legal-status")!,
+        userStatus: "not_started",
+        notes: "Demo: legal-status documents still to confirm with CaRMS.",
+        blocker: true,
+        targetDate: "2026-10-16",
+        fictional: false,
+      },
+      {
+        ...REFERENCE_REQUIREMENTS.find((x) => x.id === "bc-language")!,
+        userStatus: "in_progress",
+        notes: "Demo: collecting language evidence; applicability still needs verification.",
+        blocker: false,
+        targetDate: "",
+        fictional: false,
+      },
+    ],
+  );
+
+  return {
+    ...empty,
+    authMode: "demo",
     profile: {
+      ...emptyProfile(),
       displayName: "Dr. Alex Morgan",
-      graduationYear: "2019",
-      medicalSchoolCountry: "Pakistan",
-      targetExamWindow: "2027 Q1",
       timezone: "America/Toronto",
+      countryOfResidence: "PK",
+      preferredLanguage: "en",
+      medicalSchoolCountry: "PK",
+      medicalSchoolId: "dow",
+      medicalSchoolOther: "",
+      graduationYear: "2019",
+      medicalDegree: "mbbs",
+      internshipStatus: "completed",
+      internshipDuration: "12 months",
+      graduationStatus: "Graduated; not currently in Canadian postgraduate training",
+      postgraduateTraining: "no",
+      independentPractice: "yes",
+      yearsOfPractice: "4",
+      canadaStatus: "other",
+      careerGoal: "carms",
+      targetMatchCycleId: "r1-2027-first",
+      specialtyInterestIds: ["family-medicine", "internal-medicine"],
+      relocateAnywhere: "maybe",
+      physiciansapplyStatus: "in_progress",
+      credentialVerificationStatus: "in_progress",
+      mccqeStatus: "in_progress",
+      nacExamStatus: "not_started",
+      languageEvidenceStatus: "in_progress",
+      onboardingComplete: true,
+      targetExamWindow: "2027 Q1",
       notes: "Planning a 2027 match cycle. Confirm provincial routes before submitting documents.",
     },
-    catalogs: DEMO_CATALOGS,
     sessions: [
       {
         id: "ses-demo-1",
@@ -409,27 +504,26 @@ export function createDemoState(): AppState {
     reviews: [
       {
         id: "rev-1",
-        topic: "Hyponatraemia workup (demo topic)",
+        topic: "Hyponatraemia workup (personal topic)",
         firstSeenAt: iso(24 * 10),
         completedIntervals: [1],
         notes: "Synthetic spaced-review card. Not from a paid bank.",
       },
       {
         id: "rev-2",
-        topic: "Paediatric fever without source (demo topic)",
+        topic: "Paediatric fever without source",
         firstSeenAt: iso(24 * 3),
         completedIntervals: [],
         notes: "",
       },
       {
         id: "rev-3",
-        topic: "COPD exacerbation (demo topic)",
+        topic: "COPD exacerbation",
         firstSeenAt: iso(2),
         completedIntervals: [],
         notes: "Due soon on the 1-day interval.",
       },
     ],
-    nacStations: DEMO_NAC_STATIONS,
     nacAttempts: [
       {
         id: "nac-att-1",
@@ -477,7 +571,13 @@ export function createDemoState(): AppState {
         notes: "Short demo mock — two original stations.",
       },
     ],
-    languagePlans: DEMO_LANGUAGE_PLANS,
+    languagePlans: defaultLanguagePlans().map((p) =>
+      p.examKind === "oet_medicine"
+        ? { ...p, applicability: "needs_verification", testDate: "2026-11-15", notes: "Confirm acceptance with target programs." }
+        : p.examKind === "celpip"
+          ? { ...p, applicability: "unknown" }
+          : p,
+    ),
     languageAttempts: [
       {
         id: "lang-1",
@@ -488,7 +588,6 @@ export function createDemoState(): AppState {
         notes: "Speaking practice.",
       },
     ],
-    interviewBank: DEMO_INTERVIEW_BANK,
     interviewSessions: [
       {
         id: "int-ses-1",
@@ -499,9 +598,30 @@ export function createDemoState(): AppState {
         improvementAreas: "Tighter opening sentence.",
       },
     ],
-    targetProvinceCodes: ["ON", "BC"],
-    requirements: DEMO_REQUIREMENTS,
-    programs: DEMO_PROGRAMS,
-    matchOutcome: { status: "awaiting", programId: null, recordedAt: "", notes: "" },
+    targetProvinceCodes,
+    requirements,
+    programs,
+    matchOutcome: { status: "awaiting", programId: null, recordedAt: "", notes: "", nextCycleNotes: "" },
+    credentials: defaultCredentials().map((c) =>
+      c.kind === "physiciansapply_account"
+        ? { ...c, status: "in_progress", notes: "Account created (synthetic)." }
+        : c.kind === "source_verification"
+          ? { ...c, status: "in_progress" }
+          : c,
+    ),
+    mccqeExam: {
+      status: "in_progress",
+      scheduledDate: "2026-10-10",
+      attempt: "1",
+      result: "",
+      notes: "Personal exam tracker — not an MCC registration.",
+    },
+    nacExam: { status: "not_started", scheduledDate: "", attempt: "", result: "", notes: "" },
+    carmsPhase: "application",
   };
 }
+
+/** @deprecated Use PRACTICE_NAC_STATIONS */
+export const DEMO_REQUIREMENTS: PathwayRequirement[] = [];
+export const DEMO_PROGRAMS: CarmsProgram[] = [];
+export const DEMO_LANGUAGE_PLANS = defaultLanguagePlans();

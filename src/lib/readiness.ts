@@ -19,6 +19,20 @@ export type ReadinessResult = {
   score: number | null;
 };
 
+export const COMPASS_INDICATOR_DISCLAIMER =
+  "This is a personal planning indicator, not an MCC/NAC score or prediction of examination or match performance.";
+
+export function explainReadiness(result: ReadinessResult): string[] {
+  const lines = [...result.rationale];
+  if (result.score !== null) {
+    lines.push(
+      `Compass indicator ${result.score}/100 is computed from recent logged accuracy, volume, review hygiene, and unused tracker items.`,
+    );
+  }
+  lines.push(COMPASS_INDICATOR_DISCLAIMER);
+  return lines;
+}
+
 export function computeReadiness(input: ReadinessInputs): ReadinessResult {
   const rationale: string[] = [];
   if (input.questionsLast14Days < 40 || input.sessionsLast14Days < 3 || input.recentAccuracy === null) {

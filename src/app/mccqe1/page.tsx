@@ -8,9 +8,13 @@ import { PageHeader } from "@/components/page-header";
 import { ProgressBar, RingStat } from "@/components/progress";
 import { catalogUsage, mccqe1Insights } from "@/lib/store";
 import { useStore } from "@/components/store-provider";
+import { COMPASS_INDICATOR_DISCLAIMER, explainReadiness } from "@/lib/readiness";
+import { Input, Label } from "@/components/ui/input";
+import { SELECT } from "@/components/search-select";
+import type { MilestoneStatus } from "@/domain/types";
 
 export default function Mccqe1Page() {
-  const { state } = useStore();
+  const { state, setState } = useStore();
   const insights = mccqe1Insights(state);
   const open = state.sessions.find((s) => !s.endedAt);
   const ended = state.sessions.filter((s) => s.endedAt);
@@ -22,9 +26,9 @@ export default function Mccqe1Page() {
   return (
     <div className="space-y-8">
       <PageHeader
-        eyebrow="Exams"
-        title="MCCQE1"
-        description="Study performance: sessions, accuracy, and interval review."
+        eyebrow="Exams & Study"
+        title="MCCQE"
+        description="Exam tracker, preparation logs, and official MCC links. Compass catalogs are personal volume trackers, not the MCCQE universe."
         actions={
           <Link href="/mccqe1/session">
             <Button>{open ? "Resume session" : "Start session"}</Button>
@@ -32,18 +36,58 @@ export default function Mccqe1Page() {
         }
       />
 
+      <Card>
+        <CardTitle>My Exam</CardTitle>
+        <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <div>
+            <Label>Status</Label>
+            <select
+              className={SELECT}
+              value={state.mccqeExam.status}
+              onChange={(e) => setState({ ...state, mccqeExam: { ...state.mccqeExam, status: e.target.value as MilestoneStatus } })}
+            >
+              <option value="">Not recorded</option>
+              <option value="not_started">Not started</option>
+              <option value="in_progress">In progress</option>
+              <option value="waiting">Waiting</option>
+              <option value="complete">Complete</option>
+            </select>
+          </div>
+          <div>
+            <Label>Scheduled date</Label>
+            <Input
+              type="date"
+              value={state.mccqeExam.scheduledDate.slice(0, 10)}
+              onChange={(e) => setState({ ...state, mccqeExam: { ...state.mccqeExam, scheduledDate: e.target.value } })}
+            />
+          </div>
+          <div>
+            <Label>Attempt</Label>
+            <Input value={state.mccqeExam.attempt} onChange={(e) => setState({ ...state, mccqeExam: { ...state.mccqeExam, attempt: e.target.value } })} />
+          </div>
+          <div>
+            <Label>Result (optional)</Label>
+            <Input value={state.mccqeExam.result} onChange={(e) => setState({ ...state, mccqeExam: { ...state.mccqeExam, result: e.target.value } })} />
+          </div>
+        </div>
+        <a className="mt-3 inline-block text-sm text-teal-800" href="https://mcc.ca/examinations/mccqe-part-i/" target="_blank" rel="noreferrer">
+          View official source ↗
+        </a>
+      </Card>
+
       <div className="grid gap-4 lg:grid-cols-[1.1fr_1fr]">
         <Card>
           <RingStat
             value={insights.readiness.score}
-            label="Readiness"
+            label="Compass indicator"
             hint={insights.readiness.label}
           />
           <ul className="mt-4 space-y-1 text-sm text-slate-600">
-            {insights.readiness.rationale.slice(0, 3).map((line) => (
+            {explainReadiness(insights.readiness).slice(0, 5).map((line) => (
               <li key={line}>· {line}</li>
             ))}
           </ul>
+          <p className="mt-3 text-xs text-slate-500">{COMPASS_INDICATOR_DISCLAIMER}</p>
         </Card>
         <div className="grid gap-4 sm:grid-cols-2">
           <Card>
