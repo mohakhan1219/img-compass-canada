@@ -41,7 +41,7 @@ export default function LanguagePage() {
       <PageHeader
         eyebrow="Exams"
         title="Language evidence"
-        description="Track OET, IELTS, and CELPIP as planning records. Applicability is your classification, not a national rule."
+        description="Track official language exams from the catalog against your selected pathways. Compass does not certify that a score satisfies a province."
       />
 
       <Card>
