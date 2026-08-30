@@ -47,7 +47,8 @@ describe("dashboard command center", () => {
   it("marks completed, current, and attention steps from recorded statuses", () => {
     const steps = dashboardPathStatuses(createDemoState());
     expect(steps.find((s) => s.id === "profile")?.tone).toBe("complete");
-    expect(steps.find((s) => s.id === "mccqe1")?.tone).toBe("current");
+    expect(steps.find((s) => s.id === "credentials")?.tone).toBe("current");
+    expect(steps.find((s) => s.id === "mccqe1")?.tone).toBe("attention");
     expect(steps.find((s) => s.id === "provincial")?.tone).toBe("attention");
     expect(steps.find((s) => s.id === "match")?.tone).toBe("upcoming");
   });

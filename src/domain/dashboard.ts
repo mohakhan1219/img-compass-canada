@@ -13,7 +13,7 @@ import { JOURNEY_STAGES, type JourneyStageId } from "@/domain/stages";
 import type { AppState, StageStatus } from "@/domain/types";
 
 /** Dashboard journey path (residency stays on My Journey). */
-export const DASHBOARD_PATH: JourneyStageId[] = [
+export const DASHBOARD_PATH = [
   "profile",
   "credentials",
   "mccqe1",
@@ -26,7 +26,7 @@ export const DASHBOARD_PATH: JourneyStageId[] = [
   "interviews",
   "ranking",
   "match",
-];
+] as const satisfies readonly JourneyStageId[];
 
 const PATH_LABEL: Record<(typeof DASHBOARD_PATH)[number], string> = {
   profile: "Profile",
