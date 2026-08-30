@@ -203,8 +203,7 @@ export default function DashboardPage() {
       </section>
 
       <section>
-        <h2 className="mb-3 text-sm font-semibold uppercase tracking-[0.14em] text-slate-500">Residency pathway progress</h2>
-        <Card className="p-4 sm:p-5">
+        <Card className="p-4 sm:px-5 sm:py-4">
           <PathwayProgressChart
             points={series}
             overallPercent={completion.percent}
