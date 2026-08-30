@@ -118,7 +118,7 @@ export default function ProgramsPage() {
                 </div>
                 <div className="mt-3 flex flex-wrap gap-2">
                   <Button size="sm" variant={saved(p) ? "secondary" : "default"} onClick={() => setState(saveReferenceProgram(state, p.id))}>
-                    {saved(p) ? "Saved" : "Save"}
+                    {saved(p) ? "Saved" : "Save to My Programs"}
                   </Button>
                   {saved(p) ? (
                     <Button

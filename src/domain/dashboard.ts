@@ -1,4 +1,5 @@
 import { MATCH_CYCLES } from "@/reference/match-cycles";
+import { institutionById } from "@/reference/institutions";
 import { computeCarmsPipeline } from "@/domain/carms";
 import {
   computeJourneySnapshot,
@@ -43,7 +44,15 @@ const PATH_LABEL: Record<(typeof DASHBOARD_PATH)[number], string> = {
   match: "Match",
 };
 
-export type PathTone = "complete" | "current" | "upcoming" | "attention";
+export type PathTone = "complete" | "current" | "upcoming" | "verify" | "blocked";
+
+export const JOURNEY_PHASES = [
+  { id: "foundation", label: "Foundation", ids: ["profile", "credentials"] },
+  { id: "prepare", label: "Prepare", ids: ["mccqe1", "nac", "language"] },
+  { id: "explore", label: "Explore", ids: ["provincial", "programs"] },
+  { id: "apply", label: "Apply", ids: ["carms", "applications", "interviews"] },
+  { id: "match", label: "Match", ids: ["ranking", "match"] },
+] as const;
 
 export type PathStep = {
   id: JourneyStageId;
@@ -57,20 +66,21 @@ function firstOpenOnPath(status: Record<JourneyStageId, StageStatus>): JourneySt
   return DASHBOARD_PATH.find((id) => status[id] !== "complete");
 }
 
-function toneFor(status: StageStatus, isLead: boolean): PathTone {
-  if (status === "blocked" || status === "needs_verification") return "attention";
+function toneFor(status: StageStatus, isLead: boolean, id: JourneyStageId): PathTone {
   if (status === "complete") return "complete";
+  if (status === "needs_verification") return "verify";
+  if (status === "blocked") return id === "ranking" ? "blocked" : "verify";
   if (isLead || status === "in_progress" || status === "waiting") return "current";
   return "upcoming";
 }
 
 const STATUS_LABEL: Record<StageStatus, string> = {
   complete: "Completed",
-  in_progress: "Current",
+  in_progress: "In progress",
   waiting: "Waiting",
-  blocked: "Needs attention",
+  blocked: "Hold",
   not_started: "Upcoming",
-  needs_verification: "Needs attention",
+  needs_verification: "Verify",
 };
 
 export function dashboardPathStatuses(state: AppState): PathStep[] {
@@ -84,8 +94,8 @@ export function dashboardPathStatuses(state: AppState): PathStep[] {
       (status === "blocked" || status === "needs_verification") &&
       issues.length > 0 &&
       issues.every((x) => isVerificationHold(x.kind));
-    const tone = toneFor(status, lead === id);
-    const statusLabel = verifyOnly ? "Verify" : STATUS_LABEL[status];
+    const tone = toneFor(status, lead === id, id);
+    const statusLabel = verifyOnly || tone === "verify" ? "Verify" : STATUS_LABEL[status];
     return { id, label: PATH_LABEL[id], href: def.href, tone, statusLabel };
   });
 }
@@ -103,15 +113,25 @@ export function welcomeContext(
   const lead = JOURNEY_STAGES.find((s) => s.id === leadId);
   const priorities = deriveDashboardPriorities(state);
   const next = priorities[0];
-  const examFocus = leadId === "mccqe1" || leadId === "nac" || leadId === "language";
+  const currentLabel = lead?.label ?? journey.flags.currentLabel;
+  const message = next
+    ? `${currentLabel} is in focus. Next: ${next.title.toLowerCase()}.`
+    : journey.flags.next;
   return {
     greetingName: greetingName(state.profile.displayName),
-    message: next ? `${journey.flags.next}` : journey.flags.next,
+    message,
     cta: {
-      label: examFocus || next?.href.startsWith("/mccqe") || next?.href === "/nac" ? "Continue preparation" : "View next step",
+      label: "Continue preparation",
       href: next?.href ?? lead?.href ?? "/journey",
     },
   };
+}
+
+export function dashboardCompletion(state: AppState): { completed: number; total: number; percent: number } {
+  const steps = dashboardPathStatuses(state);
+  const completed = steps.filter((s) => s.tone === "complete").length;
+  const total = steps.length;
+  return { completed, total, percent: total ? Math.round((completed / total) * 100) : 0 };
 }
 
 export function deriveDashboardPriorities(state: AppState, nowMs = Date.now()): NextAction[] {
@@ -190,6 +210,7 @@ export type ReadinessCard = {
   detail: string;
   href: string;
   tone: PathTone;
+  progress: number;
 };
 
 export function readinessCards(state: AppState, nowMs = Date.now()): ReadinessCard[] {
@@ -204,14 +225,17 @@ export function readinessCards(state: AppState, nowMs = Date.now()): ReadinessCa
         : state.mccqeExam?.status === "in_progress"
           ? "In progress"
           : "Not scheduled";
+  const endedSessions = state.sessions.filter((s) => s.endedAt).length;
   const mccTone: PathTone =
     state.mccqeExam?.status === "complete"
       ? "complete"
-      : state.sessions.some((s) => s.safety === "needs_confirmation") || (mccDays != null && mccDays <= 60 && mccDays >= 0)
-        ? "attention"
+      : state.sessions.some((s) => s.safety === "needs_confirmation")
+        ? "verify"
         : state.mccqeExam?.status === "in_progress"
           ? "current"
           : "upcoming";
+  const mccProgress =
+    state.mccqeExam?.status === "complete" ? 100 : Math.min(90, 20 + endedSessions * 18);
 
   const nac = computeNacReadiness(state.nacStations, state.nacAttempts);
   const nacTone: PathTone =
@@ -227,19 +251,24 @@ export function readinessCards(state: AppState, nowMs = Date.now()): ReadinessCa
 
   const lang = computeLanguageReadiness(state.languagePlans, state.languageAttempts);
   const langTone: PathTone =
-    lang.band === "needs_verification" ? "attention" : lang.band === "on_track" || lang.band === "not_applicable" ? "complete" : "current";
-
+    lang.band === "needs_verification" ? "verify" : lang.band === "on_track" || lang.band === "not_applicable" ? "complete" : "current";
+  const langProgress =
+    lang.band === "on_track" || lang.band === "not_applicable" ? 100 : lang.band === "building" ? 55 : lang.band === "needs_verification" ? 40 : 25;
   const saved = state.programs.filter((p) => p.saved !== false);
   const pipeline = computeCarmsPipeline(state.programs, state.matchOutcome);
+  const nacProgress =
+    state.nacExam?.status === "complete" ? 100 : Math.min(90, nac.attempts * 18);
+  const appProgress = pipeline.programs ? Math.round((pipeline.submitted / pipeline.programs) * 100) : 0;
 
   return [
     {
       id: "mccqe",
       label: "MCCQE",
       status: mccStatus,
-      detail: `${state.sessions.filter((s) => s.endedAt).length} study session${state.sessions.filter((s) => s.endedAt).length === 1 ? "" : "s"} logged`,
+      detail: `${endedSessions} study session${endedSessions === 1 ? "" : "s"} logged`,
       href: "/mccqe1",
       tone: mccTone,
+      progress: mccProgress,
     },
     {
       id: "nac",
@@ -248,6 +277,7 @@ export function readinessCards(state: AppState, nowMs = Date.now()): ReadinessCa
       detail: nac.label,
       href: "/nac",
       tone: nacTone,
+      progress: nacProgress,
     },
     {
       id: "language",
@@ -256,6 +286,7 @@ export function readinessCards(state: AppState, nowMs = Date.now()): ReadinessCa
       detail: "Confirm acceptance with each program",
       href: "/language",
       tone: langTone,
+      progress: langProgress,
     },
     {
       id: "programs",
@@ -264,6 +295,7 @@ export function readinessCards(state: AppState, nowMs = Date.now()): ReadinessCa
       detail: "Explorer uses CaRMS directory names",
       href: "/programs",
       tone: saved.length > 0 ? "current" : "upcoming",
+      progress: Math.min(100, saved.length * 25),
     },
     {
       id: "applications",
@@ -272,14 +304,28 @@ export function readinessCards(state: AppState, nowMs = Date.now()): ReadinessCa
       detail: `${pipeline.programs} files in tracker`,
       href: "/applications",
       tone: pipeline.submitted > 0 || pipeline.programs > 0 ? "current" : "upcoming",
+      progress: appProgress,
     },
   ];
 }
 
-export type Milestone = { label: string; date: string; href: string };
+export type Milestone = { label: string; date: string; href: string; relative: string };
+
+export function relativeTiming(iso: string, nowMs = Date.now()): string {
+  const t = Date.parse(iso);
+  if (!Number.isFinite(t)) return "";
+  const days = Math.round((t - nowMs) / 86_400_000);
+  if (days === 0) return "Today";
+  if (days === 1) return "Tomorrow";
+  if (days > 1 && days < 14) return `In ${days} days`;
+  if (days >= 14 && days < 60) return `In ${Math.round(days / 7)} weeks`;
+  if (days >= 60) return `In ${Math.round(days / 30)} months`;
+  if (days === -1) return "Yesterday";
+  return `${Math.abs(days)} days ago`;
+}
 
 export function upcomingMilestones(state: AppState, nowMs = Date.now()): Milestone[] {
-  const items: Milestone[] = [];
+  const items: Array<Omit<Milestone, "relative">> = [];
   if (state.mccqeExam?.scheduledDate) {
     items.push({
       label: "MCCQE (personal date)",
@@ -310,7 +356,8 @@ export function upcomingMilestones(state: AppState, nowMs = Date.now()): Milesto
   return items
     .filter((m) => Number.isFinite(Date.parse(m.date)))
     .sort((a, b) => Date.parse(a.date) - Date.parse(b.date))
-    .slice(0, 5);
+    .slice(0, 5)
+    .map((m) => ({ ...m, relative: relativeTiming(m.date, nowMs) }));
 }
 
 export function programSnapshot(state: AppState) {
@@ -319,6 +366,7 @@ export function programSnapshot(state: AppState) {
     .map((p) => ({
       id: p.id,
       name: p.name,
+      institution: institutionById(p.institutionId)?.name ?? p.name,
       specialty: p.specialty,
       provinceCode: p.provinceCode,
       applicationStatus: p.applicationStatus,

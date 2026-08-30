@@ -11,7 +11,7 @@ import type { StageStatus } from "@/domain/types";
 
 function statusTone(status: StageStatus): "emerald" | "sky" | "slate" | "red" | "amber" {
   if (status === "complete") return "emerald";
-  if (status === "blocked") return "red";
+  if (status === "blocked") return "amber";
   if (status === "needs_verification") return "amber";
   if (status === "in_progress" || status === "waiting") return "sky";
   return "slate";

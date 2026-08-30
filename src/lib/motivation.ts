@@ -1,17 +1,43 @@
 import type { JourneyStageId } from "@/domain/stages";
 
-const BASE_MESSAGES = [
-  "Every focused study session moves you one step closer to residency.",
-  "Progress doesn't need to be perfect. It needs to continue.",
-  "One milestone at a time. Keep moving forward.",
-  "Today's preparation builds tomorrow's opportunity.",
-  "Your journey is long, but every completed step counts.",
-  "Consistency compounds. Show up for the work in front of you.",
-  "Steady preparation is more durable than last-minute intensity.",
+const GENERAL = [
+  "Small progress each day creates remarkable results.",
+  "Consistency today creates opportunities tomorrow.",
+  "Focus on the next step, not the entire staircase.",
+  "Progress does not have to be perfect to be meaningful.",
+  "Steady effort compounds more reliably than intensity alone.",
+  "Show up for the work in front of you. The rest follows.",
+  "A calm, focused session is still a session that counts.",
+  "Keep the next hour useful. That is enough for today.",
 ] as const;
 
+const PHYSICIAN = [
+  "Every hour of preparation brings you closer to the physician you are working to become.",
+  "Medicine rewards preparation, persistence and compassion.",
+  "Every clinical lesson strengthens the physician you are becoming.",
+  "Knowledge grows through consistent practice.",
+  "Careful study is part of how physicians look after the people they will serve.",
+  "Preparation is a professional habit, not a performance.",
+  "Clear thinking comes from repeated, honest practice.",
+] as const;
+
+const IMG = [
+  "You have already crossed borders for your medical journey. Keep moving forward.",
+  "Your medical experience is part of your foundation. This is the next chapter.",
+  "The Canadian residency pathway is a journey — progress one milestone at a time.",
+  "Every completed milestone moves your residency journey forward.",
+  "The pathway is long. Completing the step in front of you still matters.",
+  "Research, exams and applications are sequential work. Take the next one.",
+  "You are building a Canadian training pathway on a career you have already begun.",
+] as const;
+
+/** Interleaved so consecutive days mix general, physician, and IMG tones. */
+export const COMPASS_MESSAGES = GENERAL.flatMap((g, i) =>
+  [g, PHYSICIAN[i % PHYSICIAN.length], IMG[i % IMG.length]],
+);
+
 const STAGE_FOCUS: Partial<Record<JourneyStageId, string>> = {
-  mccqe1: "You're currently focusing on MCCQE preparation. Keep building consistency.",
+  mccqe1: "You are currently focusing on MCCQE preparation. Keep building consistency.",
   nac: "NAC is on your horizon. Preparation now reduces pressure later.",
   language: "Language evidence is part of the pathway. Keep this requirement visible.",
   provincial: "Eligibility notes only help if they stay aligned with official sources.",
@@ -31,8 +57,8 @@ export function utcDayIndex(now: Date = new Date()): number {
 
 export function compassMessage(currentStage: JourneyStageId, now: Date = new Date()): string {
   const day = utcDayIndex(now);
-  if (day % 3 === 0 && STAGE_FOCUS[currentStage]) {
+  if (day % 11 === 0 && STAGE_FOCUS[currentStage]) {
     return STAGE_FOCUS[currentStage]!;
   }
-  return BASE_MESSAGES[day % BASE_MESSAGES.length];
+  return COMPASS_MESSAGES[day % COMPASS_MESSAGES.length];
 }

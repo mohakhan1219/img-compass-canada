@@ -6,7 +6,7 @@ A personal navigation and tracking workspace for International Medical Graduates
 
 This is **not** medical, legal, or licensing advice, and it is **not** affiliated with the Medical Council of Canada, CaRMS, or any provincial regulator. Confirm every requirement with official sources.
 
-Create an individual account, or optionally **Explore Demo** as fictional **Dr. Alex Morgan**. Demo learner activity is synthetic. Real faculty names and official URLs are used for navigation.
+Open the workspace as fictional **Dr. Alex Morgan**. All learner activity shown in this portfolio demo is synthetic. Real faculty names and official URLs are used for navigation.
 
 [Apache License 2.0](LICENSE) · [NOTICE](NOTICE) · [V2 plan](docs/V2-PLAN.md)
 
@@ -20,7 +20,7 @@ The application is a portfolio demonstration of product and platform engineering
 
 ## Product features
 
-- **Individual accounts** (email sign-up / sign-in) plus optional Explore Demo
+- **Demo entry** as Dr. Alex Morgan (synthetic learner; not a public registration product)
 - **7-step onboarding** that builds a personalized path
 - **IMG profile** with section completeness (not a fake 100%)
 - **My Journey** from profile through credentials, exams, provinces, programs, CaRMS, match, and residency
@@ -33,7 +33,7 @@ The application is a portfolio demonstration of product and platform engineering
 - **Applications → Interviews → Ranking → Match** as one store
 - **About** page describing what Compass is and is not
 
-Demo sign-in remains optional. Settings resets demo data only for the demo learner.
+Settings resets demo data only for the demo learner.
 
 ## Screenshots
 

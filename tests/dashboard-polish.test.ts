@@ -8,7 +8,7 @@ import {
   upcomingMilestones,
   welcomeContext,
 } from "../src/domain/dashboard";
-import { compassMessage } from "../src/lib/motivation";
+import { COMPASS_MESSAGES, compassMessage } from "../src/lib/motivation";
 import { PORTFOLIO_SYNTHETIC_DISCLOSURE } from "../src/lib/eligibility";
 
 const NOW = Date.parse("2026-08-30T12:00:00Z");
@@ -35,6 +35,7 @@ describe("dashboard command center", () => {
     const state = createDemoState();
     const welcome = welcomeContext(state);
     expect(welcome.greetingName).toBe("Alex");
+    expect(welcome.cta.label).toBe("Continue preparation");
     const priorities = deriveDashboardPriorities(state, NOW);
     expect(priorities).toHaveLength(3);
     expect(priorities.map((p) => p.title)).toEqual([
@@ -48,8 +49,8 @@ describe("dashboard command center", () => {
     const steps = dashboardPathStatuses(createDemoState());
     expect(steps.find((s) => s.id === "profile")?.tone).toBe("complete");
     expect(steps.find((s) => s.id === "credentials")?.tone).toBe("current");
-    expect(steps.find((s) => s.id === "mccqe1")?.tone).toBe("attention");
-    expect(steps.find((s) => s.id === "provincial")?.tone).toBe("attention");
+    expect(steps.find((s) => s.id === "mccqe1")?.tone).toBe("verify");
+    expect(steps.find((s) => s.id === "provincial")?.tone).toBe("verify");
     expect(steps.find((s) => s.id === "match")?.tone).toBe("upcoming");
   });
 
@@ -70,6 +71,7 @@ describe("daily compass", () => {
     const b = compassMessage("mccqe1", new Date("2026-08-30T22:00:00Z"));
     expect(a).toBe(b);
     expect(a.length).toBeGreaterThan(20);
+    expect(COMPASS_MESSAGES.length).toBeGreaterThan(12);
     const nextDay = compassMessage("mccqe1", new Date("2026-08-31T08:00:00Z"));
     expect(nextDay).not.toBe(a);
   });
