@@ -6,7 +6,33 @@ Region: **ca-central-1**. Deploy principal: IAM role `img-compass-canada-deploy`
 
 http://img-compass-prod-demo-1496842689.ca-central-1.elb.amazonaws.com/
 
-Account numbers, secret ARNs, database endpoints, and credentials are **omitted** from this document and from `docs/evidence/aws-2026-08-28/`.
+Account numbers, secret ARNs, database endpoints, and credentials are **omitted** from this document and from `docs/evidence/`.
+
+## Validation (final approved UI, 30 Aug 2026, commit e144970)
+
+| Check | Result |
+| --- | --- |
+| Git commit | `e144970a382821c3d4734566d08f7c66dc66b01b` (`public-main`) |
+| ECR `img-compass-prod-demo:e144970` | Pushed `sha256:d0ae95d71641aac144f8ddf32265ac29eb86464b125c8b1d563c3859beb9acaf` |
+| Terraform plan / apply | Task definition replacement + ECS service in-place update only. **No RDS replacement. No NAT.** |
+| ECS Fargate | Task definition revision **7**; desired/running **1 / 1**; rollout COMPLETED |
+| ALB target | **healthy** on port 43210 |
+| `GET /` | 200 |
+| `GET /dashboard` after demo cookie | 200 |
+| `GET /api/health` | 200 `{"status":"ok","service":"img-compass-canada"}` |
+| `GET /api/ready` | 200 `{"ready":true,"persistence":"postgres","tls":{"rejectUnauthorized":true,"verified":true}}` |
+| `GET /api/metrics` | 200 metrics JSON |
+| Demo sign-in + `PUT`/`GET /api/state` | Round-trip persisted for synthetic **Dr. Alex Morgan** |
+| RDS `img-compass-prod-demo` | Not publicly accessible; `db.t4g.micro`; Postgres 16; CA `rds-ca-rsa2048-g1` |
+| RDS TLS | `rejectUnauthorized: true`; CloudWatch `migrate_ok` / `pg_pool_created` with `tlsVerified: true` |
+| RDS SG | tcp **5432** only from the ECS security group |
+| ECS SG | tcp **43210** only from the ALB security group |
+| NAT Gateways in VPC | **none** |
+| CloudWatch `/ecs/img-compass-prod-demo` | JSON logs; `requestId` matches `x-request-id` |
+| Cognito | Not enabled |
+| Destroy | **Not run** — runtime left active for owner review |
+
+Evidence files: [`docs/evidence/aws-2026-08-30/`](evidence/aws-2026-08-30/).
 
 ## Validation (learner rename, image v0.4.3)
 
@@ -66,7 +92,9 @@ Fargate is **not** behind a NAT Gateway. Inbound to the task is only from the AL
 
 ## Evidence files
 
-Directory: `docs/evidence/aws-2026-08-28/`
+Latest pack: [`docs/evidence/aws-2026-08-30/`](evidence/aws-2026-08-30/) (commit `e144970`, image tag `e144970`).
+
+Prior pack: `docs/evidence/aws-2026-08-28/`
 
 | File | Contents |
 | --- | --- |

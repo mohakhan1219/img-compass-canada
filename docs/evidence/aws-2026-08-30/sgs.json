@@ -1,0 +1,47 @@
+[
+  {
+    "name": "img-compass-prod-demo-ecs",
+    "ingress": [
+      {
+        "protocol": "tcp",
+        "from": 43210,
+        "to": 43210,
+        "sources": [
+          {
+            "securityGroup": "img-compass-prod-demo-alb"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "img-compass-prod-demo-alb",
+    "ingress": [
+      {
+        "protocol": "tcp",
+        "from": 80,
+        "to": 80,
+        "sources": [
+          {
+            "cidr": "0.0.0.0/0"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "img-compass-prod-demo-rds",
+    "ingress": [
+      {
+        "protocol": "tcp",
+        "from": 5432,
+        "to": 5432,
+        "sources": [
+          {
+            "securityGroup": "img-compass-prod-demo-ecs"
+          }
+        ]
+      }
+    ]
+  }
+]

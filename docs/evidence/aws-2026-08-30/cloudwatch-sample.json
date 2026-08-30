@@ -1,0 +1,39 @@
+[
+  {
+    "msg": "migrate_ok",
+    "tlsVerified": true
+  },
+  {
+    "level": "info",
+    "msg": "pg_pool_created",
+    "requestId": "a420ead3-3fc0-4f6e-a790-eb4cd4b0588e",
+    "tlsVerified": true,
+    "rejectUnauthorized": true
+  },
+  {
+    "level": "info",
+    "msg": "ready_postgres",
+    "requestId": "a420ead3-3fc0-4f6e-a790-eb4cd4b0588e",
+    "tlsVerified": true
+  },
+  {
+    "level": "info",
+    "msg": "demo_sign_in",
+    "requestId": "018eebcf-ba6d-4ee2-b291-beb35bd8fa45"
+  },
+  {
+    "level": "info",
+    "msg": "state_loaded",
+    "requestId": "b2495e7a-9edf-4d3b-b692-564f7c37a133"
+  },
+  {
+    "level": "info",
+    "msg": "state_saved",
+    "requestId": "d484dba6-f3bd-49f0-a3f2-a8877bbe366a"
+  },
+  {
+    "level": "info",
+    "msg": "state_loaded",
+    "requestId": "502a06d0-999c-411e-adbd-9ce4909ff75b"
+  }
+]

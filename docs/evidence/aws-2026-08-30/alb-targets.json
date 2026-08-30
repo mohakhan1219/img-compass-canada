@@ -1,0 +1,7 @@
+{
+  "port": 43210,
+  "states": [
+    "healthy",
+    "draining"
+  ]
+}

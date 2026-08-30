@@ -1,0 +1,8 @@
+{
+  "ready": true,
+  "persistence": "postgres",
+  "tls": {
+    "rejectUnauthorized": true,
+    "verified": true
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "desired": 1,
+  "running": 1,
+  "rollout": "COMPLETED",
+  "taskDefinition": "img-compass-prod-demo:7",
+  "launchType": "FARGATE"
+}

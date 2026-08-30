@@ -1,0 +1,9 @@
+{
+  "identifier": "img-compass-prod-demo",
+  "publiclyAccessible": false,
+  "engine": "postgres",
+  "engineVersion": "16.13",
+  "class": "db.t4g.micro",
+  "ca": "rds-ca-rsa2048-g1",
+  "storageEncrypted": true
+}
