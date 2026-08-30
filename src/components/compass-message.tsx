@@ -6,8 +6,16 @@ import type { JourneyStageId } from "@/domain/stages";
 
 function CanadaFlag() {
   return (
-    <span className="emoji-flag ml-1 inline-flex items-baseline" role="img" aria-label={CANADA_FLAG_EMOJI}>
-      {CANADA_FLAG_EMOJI}
+    <span className="ml-1 inline-flex items-center align-[-0.15em]" role="img" aria-label={CANADA_FLAG_EMOJI}>
+      <svg viewBox="0 0 60 30" className="h-[1.15em] w-[2.3em] shrink-0" aria-hidden="true">
+        <rect width="60" height="30" fill="#ff0000" />
+        <rect x="15" width="30" height="30" fill="#fff" />
+        <path
+          fill="#ff0000"
+          d="M30 7.2 31.1 12l4.9.2-3.9 3.4 1.5 4.6L30 17.4l-3.6 2.8 1.5-4.6-3.9-3.4 4.9-.2z"
+        />
+      </svg>
+      <span className="emoji-flag sr-only">{CANADA_FLAG_EMOJI}</span>
     </span>
   );
 }
