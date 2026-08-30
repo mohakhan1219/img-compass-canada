@@ -39,19 +39,17 @@ Settings resets demo data only for the demo learner.
 
 ## Screenshots
 
-Synthetic UI (Dr. Alex Morgan). Full pack: [`docs/screenshots/`](docs/screenshots/).
+Final V2 UI captured from the live AWS demo (synthetic Dr. Alex Morgan). Full pack: [`docs/screenshots/`](docs/screenshots/).
 
-| Dashboard | Applications |
+| Dashboard | Program Explorer |
 | --- | --- |
-| ![Dashboard](docs/screenshots/02-dashboard.png) | ![Applications](docs/screenshots/13-applications.png) |
+| ![Dashboard](docs/screenshots/02-dashboard-top.png) | ![Program Explorer](docs/screenshots/04-program-explorer.png) |
 
-| CaRMS pipeline | Rank order |
+| Pathway progress | CaRMS |
 | --- | --- |
-| ![CaRMS](docs/screenshots/07-carms.png) | ![Rank order](docs/screenshots/15-ranking.png) |
+| ![Pathway progress](docs/screenshots/03-dashboard-progress.png) | ![CaRMS pipeline](docs/screenshots/07-carms-applications.png) |
 
-| Interviews | Match day |
-| --- | --- |
-| ![Interviews](docs/screenshots/14-interviews.png) | ![Match day](docs/screenshots/16-match.png) |
+![About](docs/screenshots/10-about.png)
 
 ## Architecture
 

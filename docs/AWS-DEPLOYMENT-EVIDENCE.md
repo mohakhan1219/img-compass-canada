@@ -110,7 +110,7 @@ Prior pack: `docs/evidence/aws-2026-08-28/`
 | `signin.png` / `dashboard.png` | Live UI |
 | `health-browser.png` / `ready-browser.png` / `metrics-browser.png` | Live API JSON in the browser |
 
-Live UI pack (fictional Dr. Alex Morgan): `docs/screenshots/01-signin.png` … `16-match.png`.
+Final V2 product gallery (fictional Dr. Alex Morgan): [`docs/screenshots/`](screenshots/) (`01-entry.png` … `10-about.png`). AWS console/API proof stays in [`docs/evidence/aws-2026-08-30/`](evidence/aws-2026-08-30/).
 
 ## Fixes during apply (historical)
 

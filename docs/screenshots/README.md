@@ -1,30 +1,27 @@
 # Screenshots pack
 
-Synthetic captures of the fictional **Dr. Alex Morgan** demo. No real emails, photos, or other products’ IDs.
+Final V2 product gallery, captured from the live AWS demo as fictional **Dr. Alex Morgan**. No real emails, photos, AWS account IDs, or other products’ identifiers.
+
+Technical AWS proof lives separately in [`docs/evidence/aws-2026-08-30/`](../evidence/aws-2026-08-30/). Do not mix those into this gallery.
 
 | File | Screen |
 | --- | --- |
-| `01-signin.png` | Portfolio sign-in |
-| `02-dashboard.png` | Welcome dashboard |
-| `03-mccqe1.png` | MCCQE1 performance |
-| `04-nac.png` | NAC practice workspace |
-| `05-language.png` | Language evidence cards |
-| `06-provincial.png` | Provincial pathway explorer |
-| `07-carms.png` | CaRMS pipeline |
-| `08-pathway-overview.png` | Journey tiles |
-| `09-health.png` | Live `/api/health` JSON |
-| `10-ready.png` | Live `/api/ready` with Postgres + TLS verified |
-| `11-metrics.png` | Live `/api/metrics` JSON |
-| `12-profile.png` | IMG profile |
-| `13-applications.png` | Applications workspace |
-| `14-interviews.png` | Interview preparation |
-| `15-ranking.png` | Rank-order list |
-| `16-match.png` | Match day awaiting state |
+| `01-entry.png` | Entry — Continue as Dr. Alex Morgan |
+| `02-dashboard-top.png` | Dashboard hero, Daily Compass, Journey Progress |
+| `03-dashboard-progress.png` | Residency Pathway Progress graph |
+| `04-program-explorer.png` | Program Explorer with Ontario faculties |
+| `05-profile-credentials.png` | Credentials status tracking |
+| `06-provincial-pathway.png` | Provincial pathways (Ontario) |
+| `07-carms-applications.png` | CaRMS pipeline / applications hub |
+| `08-interviews-ranking.png` | Rank order |
+| `09-match.png` | Match day (awaiting result) |
+| `10-about.png` | IMG-focused About |
 
-Regenerate (app must be running):
+Regenerate from the live demo (page content only, 1440×900):
 
 ```bash
-COMPASS_SHOT_BASE=http://127.0.0.1:43210 node scripts/capture-screenshots.mjs
+COMPASS_SHOT_BASE=http://img-compass-prod-demo-1496842689.ca-central-1.elb.amazonaws.com \
+  node scripts/capture-screenshots.mjs
 ```
 
-Requires Chrome (`CHROME_PATH` if not `/usr/local/bin/google-chrome`) and `puppeteer-core` on `NODE_PATH`.
+Requires Chrome (`CHROME_PATH` if not `/usr/local/bin/google-chrome`) and `puppeteer-core`.
