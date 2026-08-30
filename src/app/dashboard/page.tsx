@@ -3,6 +3,7 @@
 import Link from "next/link";
 import {
   ArrowRight,
+  Bookmark,
   BookOpen,
   Building2,
   Calendar,
@@ -11,6 +12,7 @@ import {
   Stethoscope,
 } from "lucide-react";
 import { CompassMessage } from "@/components/compass-message";
+import { PathwayProgressChart } from "@/components/pathway-progress-chart";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -20,6 +22,7 @@ import {
   dashboardPathStatuses,
   deriveDashboardPriorities,
   JOURNEY_PHASES,
+  pathwayProgressSeries,
   programSnapshot,
   readinessCards,
   upcomingMilestones,
@@ -106,32 +109,51 @@ export default function DashboardPage() {
   const milestones = upcomingMilestones(state);
   const programs = programSnapshot(state);
   const currentId = path.find((s) => s.tone === "current" || s.tone === "verify" || s.tone === "blocked")?.id ?? "profile";
+  const series = pathwayProgressSeries(state);
 
   return (
-    <div className="space-y-8">
-      <section className="overflow-hidden rounded-3xl bg-[#0b1f33] px-6 py-6 text-white shadow-[0_16px_40px_rgba(11,31,51,0.18)] sm:px-8">
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex min-w-0 items-start gap-5">
+    <div className="max-w-full space-y-8 overflow-x-hidden">
+      <section className="relative overflow-hidden rounded-3xl bg-[#0b1f33] px-5 py-6 text-white shadow-[0_16px_40px_rgba(11,31,51,0.18)] sm:px-8">
+        <svg
+          viewBox="0 0 120 120"
+          className="pointer-events-none absolute -right-6 top-1/2 hidden h-44 w-44 -translate-y-1/2 text-teal-400/15 sm:block lg:right-8 lg:h-52 lg:w-52"
+          aria-hidden
+        >
+          <circle cx="60" cy="60" r="28" fill="none" stroke="currentColor" strokeWidth="1.5" />
+          <circle cx="60" cy="60" r="8" fill="currentColor" />
+          {[0, 45, 90, 135].map((deg) => (
+            <line
+              key={deg}
+              x1="60"
+              y1="12"
+              x2="60"
+              y2="32"
+              stroke="currentColor"
+              strokeWidth="2"
+              transform={`rotate(${deg} 60 60)`}
+            />
+          ))}
+        </svg>
+        <div className="relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex min-w-0 items-start gap-4 sm:gap-5">
             <CompactRing percent={completion.percent} label="pathway" />
             <div className="min-w-0">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-teal-200">Dashboard</p>
-              <h1 className="mt-1 text-2xl font-semibold tracking-tight sm:text-3xl">Welcome back, {welcome.greetingName}</h1>
+              <CompassMessage currentStage={currentId} variant="hero" />
+              <h1 className="mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">Welcome back, {welcome.greetingName}</h1>
               <p className="mt-2 max-w-xl text-sm leading-relaxed text-teal-50/85">{welcome.message}</p>
-              <p className="mt-2 text-xs text-teal-100/70">
+              <p className="mt-2 text-xs text-teal-100/80">
                 {completion.completed} of {completion.total} pathway stages complete
               </p>
+              <Link href={welcome.cta.href} className="mt-4 inline-flex">
+                <Button className="bg-teal-500 text-white hover:bg-teal-400">
+                  Continue preparation
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </Link>
             </div>
           </div>
-          <Link href={welcome.cta.href} className="shrink-0">
-            <Button className="bg-teal-500 text-white hover:bg-teal-400">
-              Continue preparation
-              <ArrowRight className="h-4 w-4" />
-            </Button>
-          </Link>
         </div>
       </section>
-
-      <CompassMessage currentStage={currentId} />
 
       <section>
         <div className="mb-3 flex flex-wrap items-end justify-between gap-3">
@@ -151,10 +173,9 @@ export default function DashboardPage() {
             </li>
           </ul>
         </div>
-        <div className="-mx-4 overflow-x-auto px-4 lg:mx-0 lg:overflow-visible lg:px-0">
-          <div className="grid min-w-[52rem] grid-cols-5 gap-3 lg:min-w-0">
-            {JOURNEY_PHASES.map((phase) => (
-              <Card key={phase.id} className="p-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-5">
+          {JOURNEY_PHASES.map((phase) => (
+            <Card key={phase.id} className="p-3">
                 <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-teal-800">{phase.label}</p>
                 <ol className="mt-3 space-y-2.5">
                   {phase.ids.map((id) => {
@@ -176,10 +197,21 @@ export default function DashboardPage() {
                     );
                   })}
                 </ol>
-              </Card>
-            ))}
-          </div>
+            </Card>
+          ))}
         </div>
+      </section>
+
+      <section>
+        <h2 className="mb-3 text-sm font-semibold uppercase tracking-[0.14em] text-slate-500">Residency pathway progress</h2>
+        <Card className="p-4 sm:p-5">
+          <PathwayProgressChart
+            points={series}
+            overallPercent={completion.percent}
+            completed={completion.completed}
+            total={completion.total}
+          />
+        </Card>
       </section>
 
       <section>
@@ -267,16 +299,22 @@ export default function DashboardPage() {
             ) : (
               <ul className="space-y-4">
                 {programs.map((p) => (
-                  <li key={p.id} className="flex items-start justify-between gap-3">
+                  <li key={p.id} className="flex items-start justify-between gap-3 rounded-xl border border-[#efe8de] bg-white/60 px-3 py-3">
                     <span className="min-w-0">
                       <span className="block text-sm font-medium text-[#0b1f33]">{p.institution}</span>
                       <span className="text-xs text-slate-500">
                         {p.specialty} · {p.provinceCode}
                       </span>
                     </span>
-                    <Badge tone={p.applicationStatus === "submitted" ? "emerald" : p.applicationStatus === "in_progress" ? "sky" : "slate"}>
-                      {APP_STATUS[p.applicationStatus] ?? p.applicationStatus}
-                    </Badge>
+                    <span className="flex shrink-0 flex-col items-end gap-1">
+                      <span className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-700">
+                        <Bookmark className="h-3.5 w-3.5 fill-emerald-600 text-emerald-600" />
+                        Saved
+                      </span>
+                      <Badge tone={p.applicationStatus === "submitted" ? "emerald" : p.applicationStatus === "in_progress" ? "sky" : "slate"}>
+                        {APP_STATUS[p.applicationStatus] ?? p.applicationStatus}
+                      </Badge>
+                    </span>
                   </li>
                 ))}
               </ul>

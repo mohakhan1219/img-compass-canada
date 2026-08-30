@@ -6,6 +6,7 @@ import {
   dashboardPathStatuses,
   deriveDashboardPriorities,
   readinessCards,
+  pathwayProgressSeries,
   upcomingMilestones,
   welcomeContext,
 } from "../src/domain/dashboard";
@@ -66,6 +67,31 @@ describe("dashboard command center", () => {
     const miles = upcomingMilestones(state, NOW);
     expect(miles.some((m) => m.label.includes("MCCQE"))).toBe(true);
     expect(miles.some((m) => m.href === "/carms")).toBe(true);
+  });
+
+  it("derives pathway graph values from tracker records without invented mock percents", () => {
+    const state = createDemoState();
+    const series = pathwayProgressSeries(state);
+    const done = dashboardCompletion(state);
+    expect(series.map((s) => s.id)).toEqual([...DASHBOARD_PATH]);
+    expect(done.completed).toBe(3);
+    expect(done.percent).toBe(25);
+
+    const byId = Object.fromEntries(series.map((s) => [s.id, s]));
+    expect(byId.profile.percent).toBe(100);
+    expect(byId.credentials.percent).toBe(0);
+    expect(byId.credentials.basis).toMatch(/0 of 7/);
+    expect(byId.mccqe1.percent).toBeNull();
+    expect(byId.mccqe1.statusLabel).toBe("Verify");
+    expect(byId.nac.percent).toBe(38);
+    expect(byId.language.percent).toBeNull();
+    expect(byId.programs.percent).toBeNull();
+    expect(byId.carms.percent).toBeNull();
+    expect(byId.applications.percent).toBe(33);
+    expect(byId.interviews.percent).toBe(100);
+    expect(byId.ranking.percent).toBe(100);
+    expect(byId.match.percent).toBe(0);
+    expect(series.every((s) => ![60, 40, 50, 35, 30, 15, 10, 5].includes(s.percent ?? -1))).toBe(true);
   });
 });
 

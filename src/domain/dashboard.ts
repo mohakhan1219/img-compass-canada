@@ -1,6 +1,7 @@
 import { MATCH_CYCLES } from "@/reference/match-cycles";
 import { institutionById } from "@/reference/institutions";
-import { computeCarmsPipeline } from "@/domain/carms";
+import { computeCarmsPipeline, rankedPrograms } from "@/domain/carms";
+import { computeProvincialSnapshot } from "@/domain/requirements";
 import {
   computeJourneySnapshot,
   issuesForStage,
@@ -371,4 +372,182 @@ export function programSnapshot(state: AppState) {
       provinceCode: p.provinceCode,
       applicationStatus: p.applicationStatus,
     }));
+}
+
+export type PathwayProgressPoint = {
+  id: JourneyStageId;
+  label: string;
+  href: string;
+  tone: PathTone;
+  statusLabel: string;
+  /** Countable completion from tracker records, or null when no honest ratio exists. */
+  percent: number | null;
+  basis: string;
+};
+
+function ratioPercent(done: number, total: number): number | null {
+  if (total <= 0) return null;
+  return Math.round((done / total) * 100);
+}
+
+function uniqueCount(values: string[]): number {
+  return new Set(values.filter(Boolean)).size;
+}
+
+/**
+ * Pathway graph series. Percentages are only emitted when the domain has a
+ * countable record (sections, credentials marked complete, practice coverage,
+ * provincial items, application pipeline, rank list). Stages without a
+ * defensible ratio keep `percent: null` and the journey status label.
+ */
+export function pathwayProgressSeries(state: AppState): PathwayProgressPoint[] {
+  const steps = dashboardPathStatuses(state);
+  const profile = overallCompleteness(state.profile);
+  const credRows = state.credentials ?? [];
+  const credDone = credRows.filter((c) => c.status === "complete").length;
+  const nacStations = state.nacStations ?? [];
+  const practisedStations = uniqueCount(state.nacAttempts.map((a) => a.stationId));
+  const provincial = computeProvincialSnapshot(state.requirements, state.targetProvinceCodes);
+  const saved = state.programs.filter((p) => p.saved !== false);
+  const pipeline = computeCarmsPipeline(state.programs, state.matchOutcome);
+  const invited = state.programs.filter((p) => p.invitationStatus === "invited");
+  const interviewedInvited = invited.filter((p) => p.interviewed).length;
+  const included = state.programs.filter((p) => p.rankIncluded);
+  const ranked = rankedPrograms(state.programs).length;
+  const lang = computeLanguageReadiness(state.languagePlans, state.languageAttempts);
+  const langSkills = uniqueCount(state.languageAttempts.map((a) => a.skill));
+
+  const byId = new Map(steps.map((s) => [s.id, s]));
+
+  const specs: Array<{
+    id: (typeof DASHBOARD_PATH)[number];
+    percent: number | null;
+    basis: string;
+  }> = [
+    {
+      id: "profile",
+      percent: ratioPercent(profile.filled, profile.total),
+      basis: `${profile.filled} of ${profile.total} profile sections complete`,
+    },
+    {
+      id: "credentials",
+      percent: credRows.length ? ratioPercent(credDone, credRows.length) : null,
+      basis: credRows.length
+        ? `${credDone} of ${credRows.length} credential records marked complete`
+        : "No credential records yet",
+    },
+    {
+      id: "mccqe1",
+      percent: state.mccqeExam?.status === "complete" ? 100 : null,
+      basis:
+        state.mccqeExam?.status === "complete"
+          ? "MCCQE tracker marked complete"
+          : "Study sessions are logged separately — Compass does not score MCCQE",
+    },
+    {
+      id: "nac",
+      percent:
+        state.nacExam?.status === "complete"
+          ? 100
+          : nacStations.length
+            ? ratioPercent(practisedStations, nacStations.length)
+            : null,
+      basis:
+        state.nacExam?.status === "complete"
+          ? "NAC tracker marked complete"
+          : nacStations.length
+            ? `${practisedStations} of ${nacStations.length} practice stations attempted`
+            : "No practice stations in the catalog",
+    },
+    {
+      id: "language",
+      percent:
+        lang.band === "on_track" || lang.band === "not_applicable"
+          ? 100
+          : lang.band === "needs_verification"
+            ? null
+            : lang.band === "building" || lang.band === "insufficient_evidence"
+              ? ratioPercent(Math.min(langSkills, 4), 4)
+              : null,
+      basis:
+        lang.band === "on_track" || lang.band === "not_applicable"
+          ? lang.label
+          : lang.band === "needs_verification"
+            ? "Applicability still needs verification — no completion percent"
+            : `${langSkills} of 4 skills logged on required exams (practice only)`,
+    },
+    {
+      id: "provincial",
+      percent: provincial.totalTarget ? ratioPercent(provincial.completed, provincial.totalTarget) : null,
+      basis: provincial.totalTarget
+        ? `${provincial.completed} of ${provincial.totalTarget} target-province items marked complete`
+        : "No target provinces selected",
+    },
+    {
+      id: "programs",
+      percent: null,
+      basis: `${saved.length} program${saved.length === 1 ? "" : "s"} saved — not a share of all faculties`,
+    },
+    {
+      id: "carms",
+      percent: byId.get("carms")?.tone === "complete" ? 100 : byId.get("carms")?.tone === "upcoming" ? 0 : null,
+      basis:
+        byId.get("carms")?.tone === "complete"
+          ? "CaRMS stage marked complete"
+          : byId.get("carms")?.tone === "upcoming"
+            ? "CaRMS cycle not started in the tracker"
+            : "Cycle phase is tracked; Compass does not percent-complete CaRMS",
+    },
+    {
+      id: "applications",
+      percent: pipeline.programs ? ratioPercent(pipeline.submitted, pipeline.programs) : null,
+      basis: pipeline.programs
+        ? `${pipeline.submitted} of ${pipeline.programs} tracked programs marked submitted`
+        : "No programs in the application tracker",
+    },
+    {
+      id: "interviews",
+      percent: invited.length
+        ? ratioPercent(interviewedInvited, invited.length)
+        : pipeline.interviewed
+          ? ratioPercent(pipeline.interviewed, pipeline.programs || 1)
+          : byId.get("interviews")?.tone === "upcoming"
+            ? 0
+            : null,
+      basis: invited.length
+        ? `${interviewedInvited} of ${invited.length} invited programs marked interviewed`
+        : pipeline.interviewed
+          ? `${pipeline.interviewed} interviewed of ${pipeline.programs} tracked programs`
+          : "No invitations recorded",
+    },
+    {
+      id: "ranking",
+      percent: included.length ? ratioPercent(ranked, included.length) : byId.get("ranking")?.tone === "upcoming" ? 0 : null,
+      basis: included.length
+        ? `${ranked} of ${included.length} included programs have a rank position`
+        : "No programs included on the private rank list",
+    },
+    {
+      id: "match",
+      percent: state.matchOutcome?.status === "matched" || state.matchOutcome?.status === "unmatched" ? 100 : 0,
+      basis:
+        state.matchOutcome?.status === "matched" || state.matchOutcome?.status === "unmatched"
+          ? "Match outcome recorded"
+          : "Match Day not recorded (awaiting)",
+    },
+  ];
+
+  return specs.map((spec) => {
+    const step = byId.get(spec.id)!;
+    const percent = step.tone === "complete" ? 100 : spec.percent;
+    return {
+      id: spec.id,
+      label: step.label,
+      href: step.href,
+      tone: step.tone,
+      statusLabel: step.statusLabel,
+      percent,
+      basis: step.tone === "complete" && spec.percent !== 100 ? `${spec.basis} · stage complete` : spec.basis,
+    };
+  });
 }
