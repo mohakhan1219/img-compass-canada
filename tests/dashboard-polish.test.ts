@@ -76,6 +76,7 @@ describe("daily compass", () => {
     expect(a).toBe(b);
     expect(a.length).toBeGreaterThan(20);
     expect(COMPASS_MESSAGES.length).toBeGreaterThan(12);
+    expect(COMPASS_MESSAGES.every((m) => m.emoji && m.text)).toBe(true);
     const nextDay = compassMessage("mccqe1", new Date("2026-08-31T08:00:00Z"));
     expect(nextDay).not.toBe(a);
   });
