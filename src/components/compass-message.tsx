@@ -1,8 +1,16 @@
 "use client";
 
 import { Compass } from "lucide-react";
-import { compassEntry, compassQuotedText } from "@/lib/motivation";
+import { CANADA_FLAG_EMOJI, compassEntry, compassQuotedText } from "@/lib/motivation";
 import type { JourneyStageId } from "@/domain/stages";
+
+function CanadaFlag() {
+  return (
+    <span className="emoji-flag ml-1 inline-flex items-baseline" role="img" aria-label={CANADA_FLAG_EMOJI}>
+      {CANADA_FLAG_EMOJI}
+    </span>
+  );
+}
 
 export function CompassMessage({
   currentStage,
@@ -27,7 +35,8 @@ export function CompassMessage({
           <span className="mr-1.5 text-[1.05em] leading-none" aria-hidden>
             {emoji}
           </span>
-          {quoted} <span aria-hidden>🇨🇦</span>
+          {quoted}
+          <CanadaFlag />
         </span>
       </p>
     );
@@ -43,7 +52,8 @@ export function CompassMessage({
         <span className="mr-2 text-[1.05rem] leading-none" aria-hidden>
           {emoji}
         </span>
-        {quoted} <span aria-hidden>🇨🇦</span>
+        {quoted}
+        <CanadaFlag />
       </p>
     </aside>
   );

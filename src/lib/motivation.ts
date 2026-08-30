@@ -40,8 +40,11 @@ export function compassMessage(currentStage: JourneyStageId, now: Date = new Dat
   return compassEntry(currentStage, now).text;
 }
 
+/** Regional indicators U+1F1E8 U+1F1E6 — the 🇨🇦 emoji, never the letters C/A. */
+export const CANADA_FLAG_EMOJI = "\u{1F1E8}\u{1F1E6}";
+
 /** Curly-quoted line for hero display. Flag is added by the UI, not stored in the catalog. */
 export function compassQuotedText(text: string): string {
-  const cleaned = text.replaceAll(/[“”"']/g, "").replaceAll("🇨🇦", "").trim();
+  const cleaned = text.replaceAll(/[“”"']/g, "").replaceAll(CANADA_FLAG_EMOJI, "").trim();
   return `“${cleaned}”`;
 }
