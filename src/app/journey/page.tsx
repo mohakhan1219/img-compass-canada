@@ -7,6 +7,15 @@ import { Badge } from "@/components/ui/badge";
 import { JOURNEY_STAGES } from "@/domain/stages";
 import { computeJourneySnapshot } from "@/domain/journey";
 import { useStore } from "@/components/store-provider";
+import type { StageStatus } from "@/domain/types";
+
+function statusTone(status: StageStatus): "emerald" | "sky" | "slate" | "red" | "amber" {
+  if (status === "complete") return "emerald";
+  if (status === "blocked") return "red";
+  if (status === "needs_verification") return "amber";
+  if (status === "in_progress" || status === "waiting") return "sky";
+  return "slate";
+}
 
 export default function JourneyPage() {
   const { state } = useStore();
@@ -29,7 +38,7 @@ export default function JourneyPage() {
                   <p className="text-xs text-slate-400">{String(i + 1).padStart(2, "0")}</p>
                   <p className="font-medium text-[#0b1f33]">{stage.label}</p>
                 </div>
-                <Badge>{snap.status[stage.id].replaceAll("_", " ")}</Badge>
+                <Badge tone={statusTone(snap.status[stage.id])}>{snap.status[stage.id].replaceAll("_", " ")}</Badge>
               </Card>
             </Link>
           </li>

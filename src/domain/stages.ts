@@ -19,7 +19,7 @@ export const JOURNEY_STAGES = [
 export type JourneyStageId = (typeof JOURNEY_STAGES)[number]["id"];
 
 export const NAV_GROUPS = [
-  { id: "home", label: "Home", href: "/dashboard" },
+  { id: "home", label: "Dashboard", href: "/dashboard" },
   { id: "journey", label: "My Journey", href: "/journey" },
   {
     id: "exams",

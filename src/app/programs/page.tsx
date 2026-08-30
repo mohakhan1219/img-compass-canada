@@ -88,34 +88,37 @@ export default function ProgramsPage() {
       {institutions.length === 0 ? (
         <Card>No R-1 institution is catalogued for that filter. Territories are not given fabricated programs.</Card>
       ) : (
-        <div className="grid gap-4 lg:grid-cols-2">
+        <>
+        <p className="text-xs text-slate-500">
+          Confirm IMG streams and 2027 listings on CaRMS and faculty PGME pages. These rows are research navigation,
+          not copied program descriptions.
+        </p>
+        <div className="grid gap-3 lg:grid-cols-2">
           {rows.map((p) => {
             const inst = institutionById(p.institutionId);
             const spec = specialtyById(p.specialtyId);
             return (
-              <Card key={p.id}>
+              <Card key={p.id} className="p-4">
                 <div className="flex items-start justify-between gap-2">
-                  <div>
-                    <CardTitle>{inst?.name}</CardTitle>
+                  <div className="min-w-0">
+                    <CardTitle className="text-[15px] leading-snug">{inst?.name}</CardTitle>
                     <p className="mt-1 text-sm text-slate-600">
                       {spec?.name} · {JURISDICTIONS.find((j) => j.code === p.provinceCode)?.name}
                     </p>
                   </div>
                   <Badge tone="amber">{p.sourceStatus.replace("_", " ")}</Badge>
                 </div>
-                <p className="mt-3 text-sm text-slate-600">{p.imgNotes}</p>
-                <p className="mt-2 text-xs text-slate-500">Last verified {p.lastVerifiedDate} · {p.matchCycleId}</p>
-                <div className="mt-3 flex flex-wrap gap-3 text-sm">
+                <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
                   <a className="text-teal-800" href={p.officialUrl} target="_blank" rel="noreferrer">
-                    View official source ↗
+                    Official source ↗
                   </a>
                   <a className="text-teal-800" href={p.carmsUrl} target="_blank" rel="noreferrer">
                     CaRMS ↗
                   </a>
                 </div>
-                <div className="mt-4 flex flex-wrap gap-2">
+                <div className="mt-3 flex flex-wrap gap-2">
                   <Button size="sm" variant={saved(p) ? "secondary" : "default"} onClick={() => setState(saveReferenceProgram(state, p.id))}>
-                    {saved(p) ? "Saved" : "Save to My Programs"}
+                    {saved(p) ? "Saved" : "Save"}
                   </Button>
                   {saved(p) ? (
                     <Button
@@ -134,6 +137,7 @@ export default function ProgramsPage() {
             );
           })}
         </div>
+        </>
       )}
       <p className="text-sm text-slate-600">
         Saved programs flow into <Link className="text-teal-800" href="/applications">Applications</Link>.

@@ -145,7 +145,7 @@ export function AppShell({
             ) : (
               <nav className="flex gap-1 overflow-x-auto px-3 pb-3 lg:hidden">
                 {[
-                  ["/dashboard", "Home"],
+                  ["/dashboard", "Dashboard"],
                   ["/journey", "Journey"],
                   ["/mccqe1", "MCCQE"],
                   ["/programs", "Programs"],
