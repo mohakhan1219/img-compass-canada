@@ -3,14 +3,14 @@ import type { JourneyStageId } from "@/domain/stages";
 type CompassLine = { emoji: string; text: string };
 
 const GENERAL: CompassLine[] = [
-  { emoji: "🌟", text: "Small steps today build stronger outcomes tomorrow." },
+  { emoji: "⚕️", text: "Small steps today build stronger outcomes tomorrow." },
   { emoji: "🎯", text: "Consistency turns preparation into progress." },
   { emoji: "🧭", text: "Keep moving forward — preparation compounds." },
   { emoji: "✨", text: "Learn. Reflect. Improve. Repeat." },
   { emoji: "🎯", text: "Focus on the next step, not the entire staircase." },
   { emoji: "✨", text: "Progress does not have to be perfect to be meaningful." },
   { emoji: "📚", text: "A calm, focused session is still a session that counts." },
-  { emoji: "🌟", text: "Show up for the work in front of you. The rest follows." },
+  { emoji: "🧭", text: "Show up for the work in front of you. The rest follows." },
 ];
 
 const MEDICAL: CompassLine[] = [
@@ -38,4 +38,10 @@ export function compassEntry(_currentStage: JourneyStageId, now: Date = new Date
 
 export function compassMessage(currentStage: JourneyStageId, now: Date = new Date()): string {
   return compassEntry(currentStage, now).text;
+}
+
+/** Curly-quoted line for hero display. Flag is added by the UI, not stored in the catalog. */
+export function compassQuotedText(text: string): string {
+  const cleaned = text.replaceAll(/[“”"']/g, "").replaceAll("🇨🇦", "").trim();
+  return `“${cleaned}”`;
 }

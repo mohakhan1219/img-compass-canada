@@ -1,9 +1,8 @@
 "use client";
 
 import { Compass } from "lucide-react";
-import { compassEntry } from "@/lib/motivation";
+import { compassEntry, compassQuotedText } from "@/lib/motivation";
 import type { JourneyStageId } from "@/domain/stages";
-import { cn } from "@/lib/utils";
 
 export function CompassMessage({
   currentStage,
@@ -13,19 +12,22 @@ export function CompassMessage({
   variant?: "card" | "hero";
 }) {
   const { emoji, text } = compassEntry(currentStage);
+  const quoted = compassQuotedText(text);
 
   if (variant === "hero") {
     return (
-      <p className="flex flex-wrap items-baseline gap-x-2.5 gap-y-1" data-testid="daily-compass-hero">
-        <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-teal-300">Daily Compass</span>
-        <span className="hidden text-teal-400/90 sm:inline" aria-hidden>
-          •
+      <p className="min-w-0 text-[1.05rem] leading-snug sm:text-lg" data-testid="daily-compass-hero">
+        <span className="align-baseline text-[11px] font-semibold uppercase tracking-[0.18em] text-teal-300">
+          Daily Compass
         </span>
-        <span suppressHydrationWarning className="text-[15px] font-medium leading-snug text-white sm:text-base">
-          <span className="mr-1.5 text-[1.05rem] leading-none" aria-hidden>
+        <span className="mx-1.5 text-teal-300/80" aria-hidden>
+          ·
+        </span>
+        <span suppressHydrationWarning className="font-semibold text-[#f3d5a3]">
+          <span className="mr-1.5 text-[1.05em] leading-none" aria-hidden>
             {emoji}
           </span>
-          {text}
+          {quoted} <span aria-hidden>🇨🇦</span>
         </span>
       </p>
     );
@@ -37,11 +39,11 @@ export function CompassMessage({
         <Compass className="h-3.5 w-3.5" />
         Daily Compass
       </p>
-      <p suppressHydrationWarning className={cn("mt-2 text-base font-semibold leading-snug text-[#0b1f33]")}>
+      <p suppressHydrationWarning className="mt-2 text-base font-semibold leading-snug text-teal-900">
         <span className="mr-2 text-[1.05rem] leading-none" aria-hidden>
           {emoji}
-        </span>{" "}
-        <span className="text-teal-900">{text}</span>
+        </span>
+        {quoted} <span aria-hidden>🇨🇦</span>
       </p>
     </aside>
   );

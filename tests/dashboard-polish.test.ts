@@ -10,7 +10,7 @@ import {
   upcomingMilestones,
   welcomeContext,
 } from "../src/domain/dashboard";
-import { COMPASS_MESSAGES, compassMessage } from "../src/lib/motivation";
+import { COMPASS_MESSAGES, compassMessage, compassQuotedText } from "../src/lib/motivation";
 import { PORTFOLIO_SYNTHETIC_DISCLOSURE } from "../src/lib/eligibility";
 
 const NOW = Date.parse("2026-08-30T12:00:00Z");
@@ -103,6 +103,10 @@ describe("daily compass", () => {
     expect(a.length).toBeGreaterThan(20);
     expect(COMPASS_MESSAGES.length).toBeGreaterThan(12);
     expect(COMPASS_MESSAGES.every((m) => m.emoji && m.text)).toBe(true);
+    expect(COMPASS_MESSAGES.every((m) => !m.text.includes("🇨🇦"))).toBe(true);
+    expect(COMPASS_MESSAGES.every((m) => ["🩺", "📚", "🎯", "✨", "🧭", "⚕️"].includes(m.emoji))).toBe(true);
+    expect(compassQuotedText(a).startsWith("“")).toBe(true);
+    expect(compassQuotedText(a).endsWith("”")).toBe(true);
     const nextDay = compassMessage("mccqe1", new Date("2026-08-31T08:00:00Z"));
     expect(nextDay).not.toBe(a);
   });
