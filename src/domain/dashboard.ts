@@ -115,7 +115,7 @@ export function welcomeContext(
   const next = priorities[0];
   const currentLabel = lead?.label ?? journey.flags.currentLabel;
   const message = next
-    ? `${currentLabel} is in focus. Next: ${next.title.toLowerCase()}.`
+    ? `${currentLabel} is in focus. Next: ${next.title}.`
     : journey.flags.next;
   return {
     greetingName: greetingName(state.profile.displayName),
