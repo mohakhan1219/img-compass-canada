@@ -13,20 +13,20 @@ export default function SettingsPage() {
       <PageHeader
         eyebrow="Workspace"
         title="Settings"
-        description="Reset restores the synthetic Dr. Alex Morgan records used throughout this workspace."
+        description="Restore the original sample journey used in this workspace."
       />
       <Card>
-        <CardTitle>Demo data</CardTitle>
+        <CardTitle>Sample records</CardTitle>
         <p className="mt-2 text-sm text-slate-600">
-          Restore the original synthetic journey. This does not change programmes, exams, or infrastructure.
+          Restore Dr. Alex Morgan’s original pathway notes. This does not change exams or programs in the real world.
         </p>
         <Button className="mt-4" variant="danger" onClick={reset}>
-          Reset demo data
+          Restore sample journey
         </Button>
       </Card>
       <Card>
         <CardTitle>About</CardTitle>
-        <p className="mt-2 text-sm text-slate-600">Full product and data disclosure lives on the About page.</p>
+        <p className="mt-2 text-sm text-slate-600">Product background and a quiet data note live on the About page.</p>
         <Link href="/about" className="mt-3 inline-block text-sm font-medium text-teal-800">
           Open About
         </Link>

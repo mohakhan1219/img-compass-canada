@@ -198,11 +198,15 @@ Copy `.env.example` if you need remote persistence locally. Never put RDS creden
 
 Runbook: [`docs/runbooks/deploy.md`](docs/runbooks/deploy.md).
 
+## Demo identity
+
+The in-app experience is a **product workspace** for IMGs, not a public registration product. Continue as **Dr. Alex Morgan** to explore the pathway. Account sign-up, password reset, and a hosted IdP are intentionally out of scope for this portfolio runtime. Architecture for optional cookie sessions remains in the codebase; it is not presented as a consumer signup flow.
+
 ## Synthetic data
 
 Learner records, catalogs, NAC stations, interview prompts, programmes, and provincial requirement rows are **synthetic**. They illustrate architecture and workflow, not official MCC, NAC, CaRMS, or college rules. Scores and “eligibility” labels are planning records, not exam or licensing outcomes.
 
-The app uses **one** global portfolio banner and an About page.
+The app uses a **synthetic demo learner** (Dr. Alex Morgan) rather than a production identity platform. Entry, About, and this README disclose that. There is no global warning banner in the product UI.
 
 ## Engineering ownership
 

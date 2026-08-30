@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { createDemoState } from "../src/data/seed";
 import {
   DASHBOARD_PATH,
+  dashboardCompletion,
   dashboardPathStatuses,
   deriveDashboardPriorities,
   readinessCards,
@@ -59,6 +60,9 @@ describe("dashboard command center", () => {
     const cards = readinessCards(state, NOW);
     expect(cards.map((c) => c.label)).toEqual(["MCCQE", "NAC", "Language", "Program research", "Applications"]);
     expect(cards.find((c) => c.id === "programs")?.status).toContain("3");
+    const done = dashboardCompletion(state);
+    expect(done.total).toBe(12);
+    expect(done.percent).toBe(Math.round((done.completed / 12) * 100));
     const miles = upcomingMilestones(state, NOW);
     expect(miles.some((m) => m.label.includes("MCCQE"))).toBe(true);
     expect(miles.some((m) => m.href === "/carms")).toBe(true);

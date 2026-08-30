@@ -5,7 +5,6 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input, Label } from "@/components/ui/input";
 import { SearchSelect, SELECT } from "@/components/search-select";
-import { PortfolioBanner } from "@/components/portfolio-banner";
 import { useStore } from "@/components/store-provider";
 import { COUNTRIES, MEDICAL_SCHOOLS, TIMEZONES, schoolsForCountry } from "@/reference/geo";
 import { JURISDICTIONS } from "@/reference/provinces";
@@ -50,7 +49,6 @@ export default function OnboardingPage() {
 
   return (
     <div className="min-h-screen bg-[#f4f1ea]">
-      <PortfolioBanner />
       <div className="mx-auto max-w-xl px-4 py-10">
         <p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal-800">
           Step {step + 1} of {STEPS.length}

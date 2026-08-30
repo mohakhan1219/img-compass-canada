@@ -4,8 +4,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input, Label } from "@/components/ui/input";
-import { PortfolioBanner } from "@/components/portfolio-banner";
-
 export default function ForgotPage() {
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
@@ -37,7 +35,6 @@ export default function ForgotPage() {
 
   return (
     <div className="min-h-screen bg-[#f4f1ea]">
-      <PortfolioBanner />
       <div className="mx-auto max-w-md px-4 py-16">
         <h1 className="text-2xl font-semibold">Reset password</h1>
         {phase === "request" ? (

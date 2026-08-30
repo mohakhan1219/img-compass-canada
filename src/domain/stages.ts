@@ -20,37 +20,14 @@ export type JourneyStageId = (typeof JOURNEY_STAGES)[number]["id"];
 
 export const NAV_GROUPS = [
   { id: "home", label: "Dashboard", href: "/dashboard" },
-  { id: "journey", label: "My Journey", href: "/journey" },
-  {
-    id: "exams",
-    label: "Exams & Study",
-    items: [
-      { href: "/mccqe1", label: "MCCQE" },
-      { href: "/nac", label: "NAC" },
-      { href: "/language", label: "Language" },
-    ],
-  },
-  {
-    id: "eligibility",
-    label: "Eligibility",
-    items: [
-      { href: "/profile", label: "IMG Profile" },
-      { href: "/credentials", label: "Credentials" },
-      { href: "/provincial", label: "Provincial Pathways" },
-      { href: "/programs", label: "Program Explorer" },
-    ],
-  },
-  {
-    id: "carms",
-    label: "CaRMS",
-    items: [
-      { href: "/carms", label: "Match timeline" },
-      { href: "/applications", label: "Applications" },
-      { href: "/interviews", label: "Interviews" },
-      { href: "/ranking", label: "Ranking" },
-    ],
-  },
+  { id: "journey", label: "Journey", href: "/journey" },
+  { id: "mccqe", label: "MCCQE", href: "/mccqe1" },
+  { id: "programs", label: "Programs", href: "/programs" },
+  { id: "carms", label: "CaRMS", href: "/carms" },
   { id: "match", label: "Match", href: "/match" },
-  { id: "about", label: "About", href: "/about" },
-  { id: "settings", label: "Settings", href: "/settings" },
+] as const;
+
+export const NAV_FOOTER = [
+  { href: "/about", label: "About" },
+  { href: "/settings", label: "Settings" },
 ] as const;

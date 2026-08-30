@@ -47,7 +47,7 @@ export default function ProgramsPage() {
       <PageHeader
         eyebrow="Eligibility"
         title="Program Explorer"
-        description="Research real CaRMS R-1 faculties. 2027 program descriptions are not copied here — open the official listing when it is published."
+        description="Research CaRMS R-1 faculties. Open official listings for current streams and IMG eligibility."
       />
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
         <select className={SELECT} value={province} onChange={(e) => { setProvince(e.target.value); setInstitutionId(""); }}>
@@ -90,8 +90,7 @@ export default function ProgramsPage() {
       ) : (
         <>
         <p className="text-xs text-slate-500">
-          Confirm IMG streams and 2027 listings on CaRMS and faculty PGME pages. These rows are research navigation,
-          not copied program descriptions.
+          Confirm current streams and IMG eligibility on CaRMS and faculty PGME pages.
         </p>
         <div className="grid gap-3 lg:grid-cols-2">
           {rows.map((p) => {

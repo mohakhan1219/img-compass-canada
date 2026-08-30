@@ -9,7 +9,7 @@
 - `npm audit` in CI
 - TLS via ACM when `enable_https=true` (off by default until a certificate exists)
 - Synthetic data only; no CV/passport/MCC ID uploads
-- Eligibility copy is on the About page; a single portfolio banner discloses synthetic data
+- Eligibility copy is on the About page; the product UI does not show a global warning banner
 - `scripts/dev.mjs` (Origin/Referer/Sec-Fetch stripping) is **local / Cloud Preview only**. Staging and production run `node server.js` and keep normal Next.js origin checks. The proxy is dockerignored and refuses `NODE_ENV=production`.
 - Demo cookie `compass_learner` is HttpOnly. Set `COMPASS_COOKIE_SECURE=true` only on HTTPS. HTTP ALB (default `enable_https=false`) must leave it false or browsers will drop the cookie.
 

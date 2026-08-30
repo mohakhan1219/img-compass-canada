@@ -151,8 +151,8 @@ export default function DashboardPage() {
             </li>
           </ul>
         </div>
-        <div className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:overflow-visible sm:px-0">
-          <div className="grid min-w-[52rem] grid-cols-5 gap-3 sm:min-w-0">
+        <div className="-mx-4 overflow-x-auto px-4 lg:mx-0 lg:overflow-visible lg:px-0">
+          <div className="grid min-w-[52rem] grid-cols-5 gap-3 lg:min-w-0">
             {JOURNEY_PHASES.map((phase) => (
               <Card key={phase.id} className="p-3">
                 <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-teal-800">{phase.label}</p>

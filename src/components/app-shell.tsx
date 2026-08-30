@@ -2,14 +2,18 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronDown, Compass, LogOut, Menu, X } from "lucide-react";
+import { Compass, LogOut, Menu, X } from "lucide-react";
 import { useState } from "react";
-import { NAV_GROUPS } from "@/domain/stages";
+import { NAV_FOOTER, NAV_GROUPS } from "@/domain/stages";
 import { computeJourneySnapshot } from "@/domain/journey";
 import { Button } from "@/components/ui/button";
-import { PortfolioBanner } from "@/components/portfolio-banner";
 import { cn } from "@/lib/utils";
 import type { AppState } from "@/domain/types";
+
+function isActive(pathname: string, href: string) {
+  if (href === "/dashboard") return pathname === "/dashboard";
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
 
 export function AppShell({
   children,
@@ -26,9 +30,8 @@ export function AppShell({
 
   return (
     <div className="min-h-screen bg-[#f4f1ea]">
-      <PortfolioBanner />
       <div className="mx-auto flex max-w-[1440px]">
-        <aside className="hidden w-64 shrink-0 border-r border-[#e4ddd2] bg-[#0b1f33] lg:sticky lg:top-0 lg:flex lg:h-screen lg:flex-col">
+        <aside className="hidden w-60 shrink-0 border-r border-[#e4ddd2] bg-[#0b1f33] lg:sticky lg:top-0 lg:flex lg:h-screen lg:flex-col">
           <Link href="/dashboard" className="flex items-center gap-2.5 px-5 py-5 text-white">
             <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-teal-600">
               <Compass className="h-5 w-5" />
@@ -38,50 +41,37 @@ export function AppShell({
               <span className="text-[11px] font-medium text-teal-200/80">Canada</span>
             </span>
           </Link>
-          <nav className="flex-1 overflow-y-auto px-3 pb-4">
-            {NAV_GROUPS.map((group) => {
-              if ("items" in group && group.items) {
-                return (
-                  <div key={group.id} className="mb-4">
-                    <p className="mb-1 px-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
-                      {group.label}
-                    </p>
-                    <ul className="space-y-0.5">
-                      {group.items.map((item) => {
-                        const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
-                        return (
-                          <li key={item.href}>
-                            <Link
-                              href={item.href}
-                              className={cn(
-                                "block rounded-xl px-2.5 py-2 text-sm",
-                                active ? "bg-white/10 font-medium text-white" : "text-slate-300 hover:bg-white/5 hover:text-white",
-                              )}
-                            >
-                              {item.label}
-                            </Link>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  </div>
-                );
-              }
-              const href = "href" in group ? group.href : "/dashboard";
-              const active = pathname === href;
-              return (
-                <Link
-                  key={group.id}
-                  href={href}
-                  className={cn(
-                    "mb-1 block rounded-xl px-2.5 py-2 text-sm",
-                    active ? "bg-white/10 font-medium text-white" : "text-slate-300 hover:bg-white/5 hover:text-white",
-                  )}
-                >
-                  {group.label}
-                </Link>
-              );
-            })}
+          <nav className="flex-1 px-3 pb-4">
+            {NAV_GROUPS.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  "mb-1 block rounded-xl px-2.5 py-2 text-sm",
+                  isActive(pathname, item.href)
+                    ? "bg-white/10 font-medium text-white"
+                    : "text-slate-300 hover:bg-white/5 hover:text-white",
+                )}
+              >
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+          <nav className="border-t border-white/10 px-3 py-4">
+            {NAV_FOOTER.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  "mb-1 block rounded-xl px-2.5 py-2 text-sm",
+                  isActive(pathname, item.href)
+                    ? "bg-white/10 font-medium text-white"
+                    : "text-slate-400 hover:bg-white/5 hover:text-white",
+                )}
+              >
+                {item.label}
+              </Link>
+            ))}
           </nav>
         </aside>
 
@@ -96,7 +86,7 @@ export function AppShell({
                 IMG Compass
               </Link>
               <p className="hidden text-sm text-slate-500 lg:block">
-                You are here: {journey.flags.currentLabel}
+                {journey.flags.currentLabel}
               </p>
               <div className="ml-auto flex items-center gap-3 text-sm">
                 <span className="hidden max-w-[200px] truncate font-medium text-[#0b1f33] sm:inline">
@@ -109,58 +99,30 @@ export function AppShell({
               </div>
             </div>
             {mobileOpen ? (
-              <nav className="space-y-2 border-t border-[#e4ddd2] px-4 py-3 lg:hidden">
-                {NAV_GROUPS.map((group) => (
-                  <div key={group.id}>
-                    {"items" in group && group.items ? (
-                      <>
-                        <p className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
-                          <ChevronDown className="h-3 w-3" /> {group.label}
-                        </p>
-                        <div className="mt-1 flex flex-wrap gap-1">
-                          {group.items.map((item) => (
-                            <Link
-                              key={item.href}
-                              href={item.href}
-                              onClick={() => setMobileOpen(false)}
-                              className="rounded-full bg-white px-3 py-1.5 text-xs ring-1 ring-[#e4ddd2]"
-                            >
-                              {item.label}
-                            </Link>
-                          ))}
-                        </div>
-                      </>
-                    ) : (
-                      <Link
-                        href={"href" in group ? group.href : "/dashboard"}
-                        onClick={() => setMobileOpen(false)}
-                        className="inline-block rounded-full bg-white px-3 py-1.5 text-xs ring-1 ring-[#e4ddd2]"
-                      >
-                        {group.label}
-                      </Link>
-                    )}
-                  </div>
+              <nav className="flex flex-wrap gap-1 border-t border-[#e4ddd2] px-4 py-3 lg:hidden">
+                {[...NAV_GROUPS, ...NAV_FOOTER].map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setMobileOpen(false)}
+                    className="rounded-full bg-white px-3 py-1.5 text-xs ring-1 ring-[#e4ddd2]"
+                  >
+                    {item.label}
+                  </Link>
                 ))}
               </nav>
             ) : (
               <nav className="flex gap-1 overflow-x-auto px-3 pb-3 lg:hidden">
-                {[
-                  ["/dashboard", "Dashboard"],
-                  ["/journey", "Journey"],
-                  ["/mccqe1", "MCCQE"],
-                  ["/programs", "Programs"],
-                  ["/carms", "CaRMS"],
-                  ["/match", "Match"],
-                ].map(([href, label]) => (
+                {NAV_GROUPS.map((item) => (
                   <Link
-                    key={href}
-                    href={href}
+                    key={item.href}
+                    href={item.href}
                     className={cn(
                       "shrink-0 rounded-full px-3 py-1.5 text-xs font-medium",
-                      pathname === href ? "bg-teal-700 text-white" : "bg-white text-slate-600 ring-1 ring-[#e4ddd2]",
+                      isActive(pathname, item.href) ? "bg-teal-700 text-white" : "bg-white text-slate-600 ring-1 ring-[#e4ddd2]",
                     )}
                   >
-                    {label}
+                    {item.label}
                   </Link>
                 ))}
               </nav>

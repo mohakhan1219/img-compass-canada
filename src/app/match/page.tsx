@@ -84,12 +84,12 @@ export default function MatchPage() {
           className="text-xs font-medium text-slate-500 underline-offset-2 hover:text-slate-700 hover:underline"
           onClick={() => setOpenControls((v) => !v)}
         >
-          {openControls ? "Hide demo controls" : "Demo controls"}
+          {openControls ? "Hide result recording" : "Record match result"}
         </button>
         {openControls ? (
           <Card className="mt-3">
-            <CardTitle>Demo controls</CardTitle>
-            <p className="mt-2 text-sm text-slate-600">Preview awaiting, matched, or unmatched states.</p>
+            <CardTitle>Record result</CardTitle>
+            <p className="mt-2 text-sm text-slate-600">Update this tracker when CaRMS publishes outcomes.</p>
             <div className="mt-4 flex flex-wrap gap-2">
               <Button variant="secondary" size="sm" onClick={() => record("awaiting", null)}>
                 Awaiting

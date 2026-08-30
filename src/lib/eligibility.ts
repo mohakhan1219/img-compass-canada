@@ -1,6 +1,3 @@
-export const PORTFOLIO_BANNER =
-  "Portfolio demo · Synthetic data. Confirm licensing requirements with official Canadian authorities.";
-
 export const PORTFOLIO_SYNTHETIC_DISCLOSURE =
   "All learner activity shown in this portfolio demo is synthetic.";
 
