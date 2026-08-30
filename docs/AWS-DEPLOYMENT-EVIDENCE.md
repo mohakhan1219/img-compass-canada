@@ -32,7 +32,7 @@ Account numbers, secret ARNs, database endpoints, and credentials are **omitted*
 | Cognito | Not enabled |
 | Destroy | **Not run** — runtime left active for owner review |
 
-Evidence files: [`docs/evidence/aws-2026-08-30/`](evidence/aws-2026-08-30/).
+Evidence files: [`docs/evidence/aws-2026-08-30/`](evidence/aws-2026-08-30/) (`live-entry.webp`, `live-dashboard.webp`, `live-programs.webp`, `live-about.webp`, `live-dashboard-mobile.webp`).
 
 ## Validation (learner rename, image v0.4.3)
 
