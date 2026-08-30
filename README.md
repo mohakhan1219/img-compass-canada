@@ -21,6 +21,8 @@ The application is a portfolio demonstration of product and platform engineering
 ## Product features
 
 - **Demo entry** as Dr. Alex Morgan (synthetic learner; not a public registration product)
+- **Dashboard** with a navy hero, Daily Compass (date-rotated generic and medical/physician/IMG messages), five-phase Journey Progress, derived priorities, readiness cards, milestones, and saved programmes
+- **Residency Pathway Progress** — compact stage chart derived from tracker records (no invented study-time or exam-score analytics)
 - **7-step onboarding** that builds a personalized path
 - **IMG profile** with section completeness (not a fake 100%)
 - **My Journey** from profile through credentials, exams, provinces, programs, CaRMS, match, and residency
@@ -31,7 +33,7 @@ The application is a portfolio demonstration of product and platform engineering
 - **Program Explorer** (institution research records; 2027 descriptions are not fabricated)
 - **CaRMS hub** with published 2027 first-iteration dates and last-verified metadata
 - **Applications → Interviews → Ranking → Match** as one store
-- **About** page describing what Compass is and is not
+- **About** page describing what Compass is and is not (product-facing; architecture lives in this README and `docs/`)
 
 Settings resets demo data only for the demo learner.
 
