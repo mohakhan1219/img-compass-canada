@@ -16,7 +16,7 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v4
-      - uses: aws-actions/configure-aws-credentials@v4
+      - uses: aws-actions/configure-aws-credentials@v6
         with:
           aws-region: ca-central-1
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
